@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainEmailVerification"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
+    tools:context=".EmailVerificationActivity">
+
+    <!-- Background gradient overlay -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/login_background_overlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- AppBar with back button -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayoutEmailVerification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarEmailVerification"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Email Verification"
+            app:titleCentered="true"
+            app:titleTextColor="@android:color/white"
+            app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@android:color/white" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Main content card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/verificationCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="12dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayoutEmailVerification"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.3">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="32dp"
+            android:gravity="center">
+
+            <!-- Email Verification Icon -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="?attr/colorPrimary">
+
+                <ImageView
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_email"
+                    android:contentDescription="Email Verification Icon"
+                  />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verify Your Email"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Email message -->
+            <TextView
+                android:id="@+id/textViewEmailMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="We've sent a verification link to your email address. Please check your inbox and click the link to verify your account."
+                android:textSize="14sp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"
+                android:lineSpacingExtra="2dp" />
+
+            <!-- Instruction text -->
+            <TextView
+                android:id="@+id/textViewInstruction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="If you received the verification email, click the button below to verify manually:"
+                android:textSize="12sp"
+                android:textColor="?android:attr/textColorSecondary"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
+                android:lineSpacingExtra="2dp" />
+
+            <!-- Verify Email Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonVerifyEmail"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="VERIFY EMAIL"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                app:cornerRadius="12dp"
+                app:backgroundTint="?attr/colorPrimary"
+                android:layout_marginBottom="16dp"
+                app:elevation="4dp"
+                style="@style/Widget.MaterialComponents.Button" />
+
+            <!-- Resend Email Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonResendEmail"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="RESEND EMAIL"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorPrimary"
+                app:cornerRadius="12dp"
+                app:strokeColor="?attr/colorPrimary"
+                app:strokeWidth="2dp"
+                android:layout_marginBottom="24dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/textColorSecondary"
+                android:alpha="0.3"
+                android:layout_marginVertical="16dp" />
+
+            <!-- Back to Login Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonBackToLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="BACK TO LOGIN"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorSecondary"
+                app:cornerRadius="12dp"
+                android:backgroundTint="@android:color/transparent"
+                style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

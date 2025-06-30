@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chat</string>
+
+    <!-- Navigation -->
+    <string name="nav_friends">Friends</string>
+    <string name="nav_chats">Chats</string>
+    <string name="nav_stories">Stories</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Bottom Navigation Menu -->
+    <string name="menu_chats">Chats</string>
+    <string name="menu_friends">Friends</string>
+    <string name="menu_profile">Profile</string>
+
+    <!-- Friends -->
+    <string name="find_friends">Find Friends</string>
+    <string name="my_friends">My Friends</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="friend_request_sent">Friend request sent!</string>
+    <string name="no_friends_yet">You don\'t have any friends yet.\nStart by finding and adding friends!</string>
+    <string name="no_users_found">No users found</string>
+
+    <!-- Search -->
+    <string name="search_users">Search users...</string>
+    <string name="search_friends">Search friends...</string>
+    <string name="search_hint_users">Search for people by username, email or bio</string>
+    <string name="search_hint_friends">Search your friends by username, email or bio</string>
+
+    <!-- Actions -->
+    <string name="message">Message</string>
+    <string name="view_profile">View Profile</string>
+    <string name="unfriend">Unfriend</string>
+    <string name="refresh">Refresh</string>
+    <string name="logout">Logout</string>
+
+    <!-- Status -->
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="verified">Verified</string>
+    <string name="friend_since">Friends since %s</string>
+
+    <!-- Messages -->
+    <string name="coming_soon">Coming soon!</string>
+    <string name="feature_not_implemented">This feature will be implemented soon</string>
+    <string name="network_error">Network error. Please check your connection.</string>
+    <string name="loading">Loading...</string>
+
+    <!-- Validation -->
+    <string name="no_bio_available">No bio available</string>
+    <string name="unknown_user">Unknown User</string>
+</resources>
