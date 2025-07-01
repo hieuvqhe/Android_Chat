@@ -1,33 +1,31 @@
 package com.example.chat;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.example.chat.fragments.FindFriendsFragment;
+import com.example.chat.fragments.FriendRequestsFragment;
 import com.example.chat.fragments.FriendsListFragment;
-import com.example.chat.models.FriendListResponse;
+import com.example.chat.fragments.SentRequestsFragment;
 import com.example.chat.network.NetworkManager;
-import com.example.chat.services.FriendshipService;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class FriendsActivity extends AppCompatActivity {
     private static final String TAG = "FriendsActivity";
 
     private MaterialToolbar toolbar;
     private ProgressBar progressBar;
-    private FriendshipService friendshipService;
+    private BottomNavigationView bottomNavigationFriends;
 
+    // Fragments
     private FindFriendsFragment findFriendsFragment;
     private FriendsListFragment friendsListFragment;
-
-    private boolean hasFriends = false;
-    private boolean isInFindMode = false;
+    private FriendRequestsFragment friendRequestsFragment;
+    private SentRequestsFragment sentRequestsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +34,18 @@ public class FriendsActivity extends AppCompatActivity {
 
         initViews();
         setupToolbar();
-        initFriendshipService();
-        checkUserFriends();
+        setupBottomNavigation();
+
+        // Show default fragment
+        if (savedInstanceState == null) {
+            showFindFriendsFragment();
+        }
     }
 
     private void initViews() {
         toolbar = findViewById(R.id.toolbar);
         progressBar = findViewById(R.id.progressBar);
+        bottomNavigationFriends = findViewById(R.id.bottomNavigationFriends);
     }
 
     private void setupToolbar() {
@@ -55,90 +58,92 @@ public class FriendsActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
-    private void initFriendshipService() {
-        NetworkManager networkManager = NetworkManager.getInstance(this);
-        friendshipService = new FriendshipService(networkManager);
-    }
+    private void setupBottomNavigation() {
+        bottomNavigationFriends.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
 
-    /**
-     * Kiểm tra xem user có bạn bè hay không
-     */
-    private void checkUserFriends() {
-        showLoading(true);
-
-        friendshipService.getAllFriends(1, 1, new FriendshipService.FriendshipCallback<FriendListResponse>() {
-            @Override
-            public void onSuccess(FriendListResponse response) {
-                runOnUiThread(() -> {
-                    showLoading(false);
-
-                    if (response.getFriends() != null && !response.getFriends().isEmpty()) {
-                        // Có bạn bè - hiển thị danh sách bạn bè
-                        hasFriends = true;
-                        showFriendsListFragment();
-                    } else {
-                        // Không có bạn bè - hiển thị màn hình tìm bạn
-                        hasFriends = false;
-                        showFindFriendsFragment();
-                    }
-
-                    updateToolbarTitle();
-                });
+            if (itemId == R.id.navigation_find_friends) {
+                showFindFriendsFragment();
+                updateToolbarTitle("Find Friends");
+                return true;
+            } else if (itemId == R.id.navigation_my_friends) {
+                showFriendsListFragment();
+                updateToolbarTitle("My Friends");
+                return true;
+            } else if (itemId == R.id.navigation_friend_requests) {
+                showFriendRequestsFragment();
+                updateToolbarTitle("Friend Requests");
+                return true;
+            } else if (itemId == R.id.navigation_sent_requests) {
+                showSentRequestsFragment();
+                updateToolbarTitle("Sent Requests");
+                return true;
             }
 
-            @Override
-            public void onError(int statusCode, String message) {
-                runOnUiThread(() -> {
-                    showLoading(false);
-                    Toast.makeText(FriendsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                    // Mặc định hiển thị màn hình tìm bạn nếu có lỗi
-                    showFindFriendsFragment();
-                });
-            }
-
-            @Override
-            public void onNetworkError(String message) {
-                runOnUiThread(() -> {
-                    showLoading(false);
-                    Toast.makeText(FriendsActivity.this, "Network error: " + message, Toast.LENGTH_SHORT).show();
-                    showFindFriendsFragment();
-                });
-            }
+            return false;
         });
     }
 
     /**
-     * Hiển thị fragment tìm bạn
+     * Show Find Friends Fragment
      */
     private void showFindFriendsFragment() {
         if (findFriendsFragment == null) {
             findFriendsFragment = new FindFriendsFragment();
             findFriendsFragment.setOnFriendRequestSentListener(() -> {
-                // Callback khi gửi friend request thành công
-                Toast.makeText(this, "Friend request sent! Check back later for updates.", Toast.LENGTH_LONG).show();
+                // Callback when friend request sent successfully
+                // Refresh sent requests if that tab is active
+                if (sentRequestsFragment != null) {
+                    sentRequestsFragment.refreshData();
+                }
             });
         }
-
-        isInFindMode = true;
         replaceFragment(findFriendsFragment);
-        updateToolbarTitle();
     }
 
     /**
-     * Hiển thị fragment danh sách bạn bè
+     * Show Friends List Fragment
      */
     private void showFriendsListFragment() {
         if (friendsListFragment == null) {
             friendsListFragment = new FriendsListFragment();
         }
-
-        isInFindMode = false;
         replaceFragment(friendsListFragment);
-        updateToolbarTitle();
     }
 
     /**
-     * Thay thế fragment
+     * Show Friend Requests Fragment
+     */
+    private void showFriendRequestsFragment() {
+        if (friendRequestsFragment == null) {
+            friendRequestsFragment = new FriendRequestsFragment();
+            friendRequestsFragment.setOnRequestActionListener(() -> {
+                // Callback when request is accepted/rejected
+                // Refresh friends list if that tab is active
+                if (friendsListFragment != null) {
+                    friendsListFragment.refreshData();
+                }
+            });
+        }
+        replaceFragment(friendRequestsFragment);
+    }
+
+    /**
+     * Show Sent Requests Fragment
+     */
+    private void showSentRequestsFragment() {
+        if (sentRequestsFragment == null) {
+            sentRequestsFragment = new SentRequestsFragment();
+            sentRequestsFragment.setOnSentRequestActionListener(() -> {
+                // Callback when sent request is cancelled
+                // Could refresh other tabs if needed
+            });
+        }
+        replaceFragment(sentRequestsFragment);
+    }
+
+    /**
+     * Replace fragment
      */
     private void replaceFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -147,92 +152,64 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
     /**
-     * Cập nhật title của toolbar
+     * Update toolbar title
      */
-    private void updateToolbarTitle() {
+    private void updateToolbarTitle(String title) {
         if (getSupportActionBar() != null) {
-            if (isInFindMode) {
-                getSupportActionBar().setTitle("Find Friends");
-            } else {
-                getSupportActionBar().setTitle("My Friends");
-            }
+            getSupportActionBar().setTitle(title);
         }
-
-        // Cập nhật menu
-        invalidateOptionsMenu();
     }
 
     /**
-     * Hiển thị/ẩn loading
+     * Show/hide loading
      */
-    private void showLoading(boolean show) {
+    public void showLoading(boolean show) {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**
-     * Refresh dữ liệu
+     * Refresh all fragments
      */
-    public void refreshData() {
-        checkUserFriends();
-    }
-
-    /**
-     * Chuyển đổi giữa find friends và friends list
-     */
-    public void toggleMode() {
-        if (isInFindMode) {
-            if (hasFriends) {
-                showFriendsListFragment();
-            } else {
-                Toast.makeText(this, "You don't have any friends yet. Keep finding!", Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            showFindFriendsFragment();
+    public void refreshAllFragments() {
+        if (findFriendsFragment != null) {
+            // Find friends fragment auto-loads
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.friends_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem toggleItem = menu.findItem(R.id.action_toggle_mode);
-        MenuItem refreshItem = menu.findItem(R.id.action_refresh);
-
-        if (toggleItem != null) {
-            if (isInFindMode) {
-                toggleItem.setTitle("My Friends");
-                toggleItem.setIcon(R.drawable.ic_people);
-            } else {
-                toggleItem.setTitle("Find Friends");
-                toggleItem.setIcon(R.drawable.ic_person_add);
-            }
+        if (friendsListFragment != null) {
+            friendsListFragment.refreshData();
         }
-
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-
-        if (itemId == R.id.action_toggle_mode) {
-            toggleMode();
-            return true;
-        } else if (itemId == R.id.action_refresh) {
-            refreshData();
-            return true;
+        if (friendRequestsFragment != null) {
+            friendRequestsFragment.refreshData();
         }
-
-        return super.onOptionsItemSelected(item);
+        if (sentRequestsFragment != null) {
+            sentRequestsFragment.refreshData();
+        }
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh current fragment when returning to activity
+        refreshCurrentFragment();
+    }
+
+    /**
+     * Refresh current active fragment
+     */
+    private void refreshCurrentFragment() {
+        int selectedItemId = bottomNavigationFriends.getSelectedItemId();
+
+        if (selectedItemId == R.id.navigation_my_friends && friendsListFragment != null) {
+            friendsListFragment.refreshData();
+        } else if (selectedItemId == R.id.navigation_friend_requests && friendRequestsFragment != null) {
+            friendRequestsFragment.refreshData();
+        } else if (selectedItemId == R.id.navigation_sent_requests && sentRequestsFragment != null) {
+            sentRequestsFragment.refreshData();
+        }
     }
 }

@@ -1,32 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Primary colors -->
+    <color name="colorPrimary">#1976D2</color>
+    <color name="colorPrimaryDark">#1565C0</color>
+    <color name="colorAccent">#03DAC5</color>
+
+    <!-- Background colors -->
     <color name="background_color">#F5F5F5</color>
+
+    <!-- Card colors -->
     <color name="card_stroke_color">#E0E0E0</color>
 
-    <!-- Status colors -->
+    <!-- Text colors -->
     <color name="verified_blue">#1DA1F2</color>
-    <color name="online_green">#4CAF50</color>
-    <color name="offline_gray">#9E9E9E</color>
-
-
-    <!-- Additional colors -->
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorPrimary">#6200EE</color>
 
     <!-- Error colors -->
     <color name="error_color">#F44336</color>
     <color name="error_light">#FFEBEE</color>
+
     <!-- Status colors -->
     <color name="success_color">#4CAF50</color>
     <color name="warning_color">#FF9800</color>
 
+    <!-- Status specific colors -->
+    <color name="status_pending">#FF9800</color>
+    <color name="status_accepted">#4CAF50</color>
+    <color name="status_rejected">#F44336</color>
 
+    <!-- Badge colors -->
+    <color name="badge_background">#FF5722</color>
+    <color name="badge_text">#FFFFFF</color>
+
+    <!-- Online status -->
+    <color name="online_green">#4CAF50</color>
+    <color name="offline_gray">#9E9E9E</color>
+
+    <!-- Other colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
     <color name="gray_light">#F0F0F0</color>
     <color name="gray_medium">#BDBDBD</color>
     <color name="gray_dark">#757575</color>
 
-    <color name="colorPrimaryDark">#1565C0</color>
-
+    <!-- Transparent colors -->
+    <color name="transparent">#00000000</color>
+    <color name="black_overlay">#80000000</color>
 </resources>

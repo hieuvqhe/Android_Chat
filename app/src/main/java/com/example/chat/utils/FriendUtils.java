@@ -1,6 +1,6 @@
 package com.example.chat.utils;
 
-import com.example.chat.constants.FriendConstants;
+import android.text.format.DateUtils;
 import com.example.chat.models.Friend;
 import com.example.chat.models.UserInfo;
 import java.text.SimpleDateFormat;
@@ -10,152 +10,225 @@ import java.util.Locale;
 public class FriendUtils {
 
     /**
-     * Check if user is verified
+     * Get formatted date string from Date object
      */
-    public static boolean isUserVerified(UserInfo user) {
-        return user != null && user.getVerify() == FriendConstants.USER_VERIFIED;
+    public static String getFormattedDate(Date date) {
+        if (date == null) return "";
+
+        try {
+            // Get current time
+            long now = System.currentTimeMillis();
+            long dateTime = date.getTime();
+
+            // If within last 24 hours, show relative time
+            if (now - dateTime < DateUtils.DAY_IN_MILLIS) {
+                return DateUtils.getRelativeTimeSpanString(
+                        dateTime,
+                        now,
+                        DateUtils.MINUTE_IN_MILLIS,
+                        DateUtils.FORMAT_ABBREV_RELATIVE
+                ).toString();
+            }
+
+            // If within last week, show day name
+            if (now - dateTime < 7 * DateUtils.DAY_IN_MILLIS) {
+                SimpleDateFormat dayFormat = new SimpleDateFormat("EEEE", Locale.getDefault());
+                return dayFormat.format(date);
+            }
+
+            // If within current year, show month and day
+            SimpleDateFormat currentYearFormat = new SimpleDateFormat("MMM d", Locale.getDefault());
+            SimpleDateFormat fullFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+
+            // Check if same year
+            SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy", Locale.getDefault());
+            String currentYear = yearFormat.format(new Date());
+            String dateYear = yearFormat.format(date);
+
+            if (currentYear.equals(dateYear)) {
+                return currentYearFormat.format(date);
+            } else {
+                return fullFormat.format(date);
+            }
+
+        } catch (Exception e) {
+            // Fallback to simple format
+            SimpleDateFormat fallbackFormat = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+            return fallbackFormat.format(date);
+        }
     }
 
     /**
-     * Check if user is online
-     */
-    public static boolean isUserOnline(int activeStatus) {
-        return activeStatus == FriendConstants.ACTIVE_STATUS_ONLINE;
-    }
-
-    /**
-     * Check if friendship is accepted
-     */
-    public static boolean isFriendshipAccepted(Friend friend) {
-        return friend != null && friend.getStatus() == FriendConstants.STATUS_ACCEPTED;
-    }
-
-    /**
-     * Check if friendship is pending
-     */
-    public static boolean isFriendshipPending(Friend friend) {
-        return friend != null && friend.getStatus() == FriendConstants.STATUS_PENDING;
-    }
-
-    /**
-     * Check if friendship is rejected
-     */
-    public static boolean isFriendshipRejected(Friend friend) {
-        return friend != null && friend.getStatus() == FriendConstants.STATUS_REJECTED;
-    }
-
-    /**
-     * Get user display name (username or email if username is null)
+     * Get user display name
      */
     public static String getUserDisplayName(UserInfo user) {
         if (user == null) return "Unknown User";
 
         if (user.getUsername() != null && !user.getUsername().trim().isEmpty()) {
             return user.getUsername();
-        } else if (user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
+        }
+
+        if (user.getEmail() != null && !user.getEmail().trim().isEmpty()) {
             return user.getEmail();
-        } else {
-            return "User " + user.getId();
         }
-    }
 
-    /**
-     * Get formatted date string
-     */
-    public static String getFormattedDate(String dateString) {
-        try {
-            // Assuming the date comes in ISO format from backend
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-            SimpleDateFormat outputFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-
-            Date date = inputFormat.parse(dateString);
-            return outputFormat.format(date);
-        } catch (Exception e) {
-            return dateString; // Return original if parsing fails
-        }
-    }
-
-    /**
-     * Get user avatar URL or default
-     */
-    public static String getUserAvatarUrl(UserInfo user) {
-        if (user != null && user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
-            return user.getAvatar();
-        }
-        return null; // Return null to use default avatar
+        return "Unknown User";
     }
 
     /**
      * Get user bio or default message
      */
     public static String getUserBio(UserInfo user) {
-        if (user != null && user.getBio() != null && !user.getBio().trim().isEmpty()) {
-            return user.getBio();
+        if (user == null || user.getBio() == null || user.getBio().trim().isEmpty()) {
+            return "No bio available";
         }
-        return "No bio available";
+        return user.getBio();
     }
 
     /**
-     * Get the actual friend user from a Friend object
-     * (Since Friend can contain either friend_info or sender_info)
+     * Get user avatar URL
+     */
+    public static String getUserAvatarUrl(UserInfo user) {
+        if (user == null || user.getAvatar() == null || user.getAvatar().trim().isEmpty()) {
+            return null;
+        }
+        return user.getAvatar();
+    }
+
+    /**
+     * Check if user is verified
+     */
+    public static boolean isUserVerified(UserInfo user) {
+        return user != null && user.isVerified();
+    }
+
+    /**
+     * Get the correct user info from Friend object
+     * This handles the case where Friend might have different user info in different fields
      */
     public static UserInfo getFriendUser(Friend friend) {
         if (friend == null) return null;
 
-        // If friend_info exists, return it (this is usually the friend's info)
-        if (friend.getFriendInfo() != null) {
-            return friend.getFriendInfo();
+        // Try to get user info from friend field first
+        if (friend.getFriend() != null) {
+            return friend.getFriend();
         }
 
-        // If sender_info exists, return it (this is usually in friend requests)
-        if (friend.getSenderInfo() != null) {
-            return friend.getSenderInfo();
+        // Try to get user info from user field
+        if (friend.getUser() != null) {
+            return friend.getUser();
         }
 
-        return null;
+        // If no user info object, create one from available data
+        // This might happen if the API doesn't populate user info
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(friend.getFriendId());
+        return userInfo;
     }
 
     /**
-     * Check if user can send friend request to another user
+     * Get current user info from Friend object
      */
-    public static boolean canSendFriendRequest(UserInfo user) {
-        return user != null && isUserVerified(user);
+    public static UserInfo getCurrentUser(Friend friend) {
+        if (friend == null) return null;
+
+        // Try to get current user info
+        if (friend.getUser() != null) {
+            return friend.getUser();
+        }
+
+        // Create minimal user info if not available
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId(friend.getUserId());
+        return userInfo;
     }
 
     /**
-     * Get status color resource ID (you need to define these colors in colors.xml)
+     * Format friendship status
      */
-    public static int getStatusColorRes(int status) {
-        switch (status) {
-            case FriendConstants.STATUS_PENDING:
-                return android.R.color.holo_orange_light;
-            case FriendConstants.STATUS_ACCEPTED:
-                return android.R.color.holo_green_light;
-            case FriendConstants.STATUS_REJECTED:
-                return android.R.color.holo_red_light;
+    public static String getFriendshipStatusText(Friend friend) {
+        if (friend == null) return "Unknown";
+
+        switch (friend.getStatus()) {
+            case 1:
+                return "Pending";
+            case 2:
+                return "Accepted";
+            case 3:
+                return "Rejected";
             default:
-                return android.R.color.darker_gray;
+                return "Unknown";
         }
     }
 
     /**
-     * Validate search query
+     * Check if friendship is pending
      */
-    public static boolean isValidSearchQuery(String query) {
-        return query != null && query.trim().length() >= 2; // Minimum 2 characters
+    public static boolean isFriendshipPending(Friend friend) {
+        return friend != null && friend.isPending();
     }
 
     /**
-     * Get default page size for pagination
+     * Check if friendship is accepted
      */
-    public static int getDefaultPageSize() {
-        return FriendConstants.DEFAULT_PAGE_SIZE;
+    public static boolean isFriendshipAccepted(Friend friend) {
+        return friend != null && friend.isAccepted();
     }
 
     /**
-     * Check if more pages are available
+     * Get time ago string for friend request
      */
-    public static boolean hasMorePages(int currentPage, int totalPages) {
-        return currentPage < totalPages;
+    public static String getTimeAgo(Date date) {
+        if (date == null) return "";
+
+        try {
+            long now = System.currentTimeMillis();
+            long dateTime = date.getTime();
+
+            return DateUtils.getRelativeTimeSpanString(
+                    dateTime,
+                    now,
+                    DateUtils.MINUTE_IN_MILLIS,
+                    DateUtils.FORMAT_ABBREV_RELATIVE
+            ).toString();
+
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Create a user initial for avatar placeholder
+     */
+    public static String getUserInitial(UserInfo user) {
+        if (user == null) return "?";
+
+        String displayName = getUserDisplayName(user);
+        if (displayName.length() > 0) {
+            return String.valueOf(displayName.charAt(0)).toUpperCase();
+        }
+
+        return "?";
+    }
+
+    /**
+     * Validate user ID
+     */
+    public static boolean isValidUserId(String userId) {
+        return userId != null && !userId.trim().isEmpty() && userId.length() > 10;
+    }
+
+    /**
+     * Validate user info
+     */
+    public static boolean isValidUser(UserInfo user) {
+        return user != null && isValidUserId(user.getId());
+    }
+
+    /**
+     * Check if user is online based on active status
+     */
+    public static boolean isUserOnline(int activeStatus) {
+        return activeStatus == 1;
     }
 }

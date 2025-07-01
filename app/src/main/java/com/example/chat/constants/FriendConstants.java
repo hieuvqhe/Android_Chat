@@ -2,48 +2,45 @@ package com.example.chat.constants;
 
 public class FriendConstants {
 
-    // Friend status constants (based on backend enum)
-    public static final int STATUS_PENDING = 0;
-    public static final int STATUS_ACCEPTED = 1;
-    public static final int STATUS_REJECTED = 2;
+    // Friend Status
+    public static final int STATUS_PENDING = 1;
+    public static final int STATUS_ACCEPTED = 2;
+    public static final int STATUS_REJECTED = 3;
 
-    // User verification status
-    public static final int USER_UNVERIFIED = 0;
-    public static final int USER_VERIFIED = 1;
-    public static final int USER_BANNED = 2;
-
-    // Active status
+    // Active Status
     public static final int ACTIVE_STATUS_OFFLINE = 0;
     public static final int ACTIVE_STATUS_ONLINE = 1;
 
-    // Pagination defaults
+    // User Verification Status
+    public static final int VERIFY_STATUS_UNVERIFIED = 0;
+    public static final int VERIFY_STATUS_VERIFIED = 1;
+    public static final int VERIFY_STATUS_BANNED = 2;
+
+    // Pagination
     public static final int DEFAULT_PAGE_SIZE = 20;
-    public static final int FIRST_PAGE = 1;
+    public static final int MAX_PAGE_SIZE = 50;
 
-    // Status text for UI
-    public static String getStatusText(int status) {
-        switch (status) {
-            case STATUS_PENDING: return "Pending";
-            case STATUS_ACCEPTED: return "Friends";
-            case STATUS_REJECTED: return "Rejected";
-            default: return "Unknown";
-        }
-    }
+    // Request Types
+    public static final String REQUEST_TYPE_RECEIVED = "received";
+    public static final String REQUEST_TYPE_SENT = "sent";
 
-    public static String getVerificationText(int verify) {
-        switch (verify) {
-            case USER_UNVERIFIED: return "Unverified";
-            case USER_VERIFIED: return "Verified";
-            case USER_BANNED: return "Banned";
-            default: return "Unknown";
-        }
-    }
+    // Intent Keys
+    public static final String EXTRA_USER_ID = "extra_user_id";
+    public static final String EXTRA_USERNAME = "extra_username";
+    public static final String EXTRA_FRIEND_ID = "extra_friend_id";
+    public static final String EXTRA_REQUEST_TYPE = "extra_request_type";
 
-    public static String getActiveStatusText(int activeStatus) {
-        switch (activeStatus) {
-            case ACTIVE_STATUS_OFFLINE: return "Offline";
-            case ACTIVE_STATUS_ONLINE: return "Online";
-            default: return "Unknown";
-        }
-    }
+    // Error Messages
+    public static final String ERROR_NETWORK = "Network error. Please check your connection.";
+    public static final String ERROR_INVALID_USER = "Invalid user information.";
+    public static final String ERROR_FRIEND_REQUEST_EXISTS = "Friend request already sent.";
+    public static final String ERROR_ALREADY_FRIENDS = "You are already friends.";
+    public static final String ERROR_SELF_FRIEND_REQUEST = "You cannot send friend request to yourself.";
+
+    // Success Messages
+    public static final String SUCCESS_FRIEND_REQUEST_SENT = "Friend request sent successfully.";
+    public static final String SUCCESS_FRIEND_REQUEST_ACCEPTED = "Friend request accepted.";
+    public static final String SUCCESS_FRIEND_REQUEST_REJECTED = "Friend request rejected.";
+    public static final String SUCCESS_FRIEND_REQUEST_CANCELLED = "Friend request cancelled.";
+    public static final String SUCCESS_UNFRIEND = "Successfully unfriended.";
 }

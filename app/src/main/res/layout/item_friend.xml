@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Profile Click Area (invisible overlay for profile clicks) -->
+        <!-- Profile Click Area -->
         <View
             android:id="@+id/profileClickArea"
             android:layout_width="0dp"
@@ -27,7 +27,7 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            app:layout_constraintBottom_toTopOf="@id/actionsContainer"
+            app:layout_constraintBottom_toTopOf="@id/buttonsContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,8 +35,8 @@
         <!-- Avatar Container -->
         <FrameLayout
             android:id="@+id/avatarContainer"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -45,15 +45,15 @@
                 android:id="@+id/imageViewAvatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:contentDescription="Friend avatar"
+                android:contentDescription="User avatar"
                 android:scaleType="centerCrop"
                 android:src="@drawable/default_avatar" />
 
-            <!-- Online Status Indicator -->
+            <!-- Online Status -->
             <ImageView
                 android:id="@+id/imageViewOnlineStatus"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:layout_gravity="bottom|end"
                 android:background="@drawable/circle_white_background"
                 android:contentDescription="Online status"
@@ -69,7 +69,7 @@
             android:id="@+id/usernameContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
@@ -86,16 +86,16 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="?android:attr/textColorPrimary"
-                android:textSize="18sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 tools:text="john_doe" />
 
             <!-- Verified Badge -->
             <ImageView
                 android:id="@+id/imageViewVerified"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_marginStart="6dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
                 android:contentDescription="Verified user"
                 android:src="@drawable/ic_verified"
                 android:tint="@color/verified_blue"
@@ -109,8 +109,8 @@
             android:id="@+id/textViewEmail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="4dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
@@ -126,8 +126,8 @@
             android:id="@+id/textViewBio"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="2"
@@ -137,7 +137,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/avatarContainer"
             app:layout_constraintTop_toBottomOf="@id/textViewEmail"
-            tools:text="Software developer passionate about mobile apps and technology"
+            tools:text="Software developer passionate about mobile apps"
             tools:visibility="visible" />
 
         <!-- Friend Since -->
@@ -145,24 +145,21 @@
             android:id="@+id/textViewFriendSince"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="?android:attr/textColorSecondary"
+            android:textColor="?android:attr/textColorTertiary"
             android:textSize="12sp"
-            android:textStyle="italic"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/avatarContainer"
             app:layout_constraintTop_toBottomOf="@id/textViewBio"
-            tools:text="Friends since Mar 15, 2024"
-            tools:visibility="visible" />
+            tools:text="Friends since March 2024" />
 
-        <!-- Actions Container -->
+        <!-- Action Buttons Container -->
         <LinearLayout
-            android:id="@+id/actionsContainer"
+            android:id="@+id/buttonsContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -170,42 +167,40 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/avatarContainer">
+            app:layout_constraintTop_toBottomOf="@id/textViewFriendSince">
+
+            <!-- More Options Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonMore"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:minWidth="80dp"
+                android:text="More"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_more_vert"
+                app:iconGravity="textEnd"
+                app:iconSize="16dp" />
 
             <!-- Chat Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonChat"
                 style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginEnd="8dp"
-                android:minWidth="120dp"
-                android:text="Message"
+                android:layout_height="36dp"
+                android:minWidth="80dp"
+                android:text="Chat"
                 android:textAllCaps="false"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 app:backgroundTint="?attr/colorPrimary"
-                app:cornerRadius="20dp"
-                app:icon="@drawable/ic_message"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/ic_chat"
                 app:iconGravity="textStart"
-                app:iconSize="18dp"
+                app:iconSize="16dp"
                 app:iconTint="@android:color/white" />
-
-            <!-- More Options Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonMore"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:insetLeft="0dp"
-                android:insetTop="0dp"
-                android:insetRight="0dp"
-                android:insetBottom="0dp"
-                app:cornerRadius="20dp"
-                app:icon="@drawable/ic_more_vert"
-                app:iconGravity="textStart"
-                app:iconSize="18dp"
-                app:iconTint="?android:attr/textColorSecondary"
-                app:strokeColor="?android:attr/textColorSecondary" />
 
         </LinearLayout>
 

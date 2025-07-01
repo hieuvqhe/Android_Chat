@@ -4,8 +4,11 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class UserListResponse {
-    @SerializedName("result")
-    private List<UserInfo> users;
+    @SerializedName("friend_suggestions")
+    private List<UserInfo> result;
+
+    @SerializedName("total")
+    private int total;
 
     @SerializedName("page")
     private int page;
@@ -13,22 +16,42 @@ public class UserListResponse {
     @SerializedName("total_pages")
     private int totalPages;
 
-    @SerializedName("message")
-    private String message;
-
-    // Constructors
     public UserListResponse() {}
 
-    // Getters and Setters
-    public List<UserInfo> getUsers() { return users; }
-    public void setUsers(List<UserInfo> users) { this.users = users; }
+    public List<UserInfo> getResult() {
+        return result;
+    }
 
-    public int getPage() { return page; }
-    public void setPage(int page) { this.page = page; }
+    public void setResult(List<UserInfo> result) {
+        this.result = result;
+    }
 
-    public int getTotalPages() { return totalPages; }
-    public void setTotalPages(int totalPages) { this.totalPages = totalPages; }
+    // Add getUsers() method for compatibility
+    public List<UserInfo> getUsers() {
+        return result;
+    }
 
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
 }
