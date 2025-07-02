@@ -6,20 +6,17 @@ import com.example.chat.models.*;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class FriendshipService {
     private static final String TAG = "FriendshipService";
-    private NetworkManager networkManager;
     private ApiService apiService;
+    private NetworkManager networkManager;
 
     public FriendshipService(NetworkManager networkManager) {
         this.networkManager = networkManager;
         this.apiService = networkManager.getApiService();
     }
 
-    // Generic callback interface for friendship operations
     public interface FriendshipCallback<T> {
         void onSuccess(T response);
         void onError(int statusCode, String message);
@@ -27,258 +24,276 @@ public class FriendshipService {
     }
 
     /**
-     * Add friend - FIXED
+     * Add friend
      */
     public void addFriend(String friendId, ApiCallback<Friend> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        Log.d(TAG, "Adding friend with ID: " + friendId);
-        Log.d(TAG, "Access token: " + (accessToken != null ? "Present" : "Missing"));
-
-        if (accessToken == null) {
-            Log.e(TAG, "No access token available");
-            callback.onError(401, "No access token available");
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
         AddFriendRequest request = new AddFriendRequest(friendId);
-        Log.d(TAG, "Making add friend request");
-
-        apiService.addFriend(accessToken, request).enqueue(callback);
+        Call<ApiResponse<Friend>> call = apiService.addFriend(authHeader, request);
+        call.enqueue(callback);
     }
 
     /**
-     * Add friend with UserInfo - Helper method
+     * Unfriend
      */
-    public void addFriend(UserInfo user, ApiCallback<Friend> callback) {
-        String friendId = user.getId();
-        if (friendId == null || friendId.isEmpty()) {
-            Log.e(TAG, "User ID is null or empty");
-            callback.onError(400, "Invalid user ID");
+    public void unfriend(String friendshipId, ApiCallback<Object> callback) {
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
-        addFriend(friendId, callback);
+
+        Call<ApiResponse<Object>> call = apiService.unfriend(authHeader, friendshipId);
+        call.enqueue(callback);
     }
 
     /**
-     * Get friendship suggestions - FIXED
+     * Get friendship suggestions
      */
     public void getFriendshipSuggestions(int page, int limit, FriendshipCallback<UserListResponse> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
-        apiService.getFriendshipSuggestions(accessToken, page, limit).enqueue(new Callback<ApiResponse<UserListResponse>>() {
+        Call<ApiResponse<UserListResponse>> call = apiService.getFriendshipSuggestions(authHeader, page, limit);
+        call.enqueue(new ApiCallback<UserListResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse<UserListResponse>> call, Response<ApiResponse<UserListResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<UserListResponse> apiResponse = response.body();
-                    if (apiResponse.getResult() != null) {
-                        callback.onSuccess(apiResponse.getResult());
-                    } else {
-                        callback.onError(response.code(), "No data received");
-                    }
-                } else {
-                    callback.onError(response.code(), "Failed to get friendship suggestions");
-                }
+            public void onSuccess(UserListResponse result, String message) {
+                callback.onSuccess(result);
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<UserListResponse>> call, Throwable t) {
-                Log.e(TAG, "Network error getting friendship suggestions", t);
-                callback.onNetworkError(t.getMessage());
+            public void onError(int statusCode, String message) {
+                callback.onError(statusCode, message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                callback.onNetworkError(message);
             }
         });
     }
 
     /**
-     * Get all friends - FIXED
+     * Get all friends
      */
     public void getAllFriends(int page, int limit, FriendshipCallback<FriendListResponse> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
-        apiService.getAllFriends(accessToken, page, limit).enqueue(new Callback<ApiResponse<FriendListResponse>>() {
+        Call<ApiResponse<FriendListResponse>> call = apiService.getAllFriends(authHeader, page, limit);
+        call.enqueue(new ApiCallback<FriendListResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse<FriendListResponse>> call, Response<ApiResponse<FriendListResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<FriendListResponse> apiResponse = response.body();
-                    if (apiResponse.getResult() != null) {
-                        callback.onSuccess(apiResponse.getResult());
-                    } else {
-                        callback.onError(response.code(), "No data received");
-                    }
-                } else {
-                    callback.onError(response.code(), "Failed to get friends");
-                }
+            public void onSuccess(FriendListResponse result, String message) {
+                callback.onSuccess(result);
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<FriendListResponse>> call, Throwable t) {
-                callback.onNetworkError(t.getMessage());
+            public void onError(int statusCode, String message) {
+                callback.onError(statusCode, message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                callback.onNetworkError(message);
             }
         });
     }
 
     /**
-     * Get friend requests (received) - FIXED
+     * Get friend requests
      */
     public void getFriendRequests(int page, int limit, FriendshipCallback<FriendListResponse> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
-        apiService.getFriendRequests(accessToken, page, limit).enqueue(new Callback<ApiResponse<FriendListResponse>>() {
+        Call<ApiResponse<FriendListResponse>> call = apiService.getFriendRequests(authHeader, page, limit);
+        call.enqueue(new ApiCallback<FriendListResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse<FriendListResponse>> call, Response<ApiResponse<FriendListResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<FriendListResponse> apiResponse = response.body();
-                    if (apiResponse.getResult() != null) {
-                        callback.onSuccess(apiResponse.getResult());
-                    } else {
-                        callback.onError(response.code(), "No data received");
-                    }
-                } else {
-                    callback.onError(response.code(), "Failed to get friend requests");
-                }
+            public void onSuccess(FriendListResponse result, String message) {
+                callback.onSuccess(result);
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<FriendListResponse>> call, Throwable t) {
-                callback.onNetworkError(t.getMessage());
+            public void onError(int statusCode, String message) {
+                callback.onError(statusCode, message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                callback.onNetworkError(message);
             }
         });
     }
 
     /**
-     * Accept friend request - FIXED
+     * Get sent friend requests - FIXED: Sử dụng đúng API endpoint
      */
-    public void acceptFriendRequest(String friendshipId, ApiCallback<Friend> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
+    public void getSentFriendRequests(int page, int limit, FriendshipCallback<FriendListResponse> callback) {
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
-        apiService.acceptFriendRequest(accessToken, friendshipId).enqueue(callback);
+        Call<ApiResponse<FriendListResponse>> call = apiService.getSentFriendRequests(authHeader, page, limit);
+        call.enqueue(new ApiCallback<FriendListResponse>() {
+            @Override
+            public void onSuccess(FriendListResponse result, String message) {
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onError(int statusCode, String message) {
+                callback.onError(statusCode, message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                callback.onNetworkError(message);
+            }
+        });
     }
 
     /**
-     * Reject friend request - FIXED
+     * Accept friend request
      */
-    public void rejectFriendRequest(String friendshipId, ApiCallback<Friend> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
+    public void acceptFriendRequest(String friendshipId, ApiCallback<Friend> callback) {
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
-        apiService.rejectFriendRequest(accessToken, friendshipId).enqueue(callback);
+        Call<ApiResponse<Friend>> call = apiService.acceptFriendRequest(authHeader, friendshipId);
+        call.enqueue(callback);
+    }
+
+    /**
+     * Reject friend request
+     */
+    public void rejectFriendRequest(String friendshipId, ApiCallback<Friend> callback) {
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
+            return;
+        }
+
+        Call<ApiResponse<Friend>> call = apiService.rejectFriendRequest(authHeader, friendshipId);
+        call.enqueue(callback);
+    }
+
+    /**
+     * Search friends
+     */
+    public void searchFriends(String query, int page, int limit, FriendshipCallback<FriendListResponse> callback) {
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
+            return;
+        }
+
+        Call<ApiResponse<FriendListResponse>> call = apiService.searchFriends(authHeader, query, page, limit);
+        call.enqueue(new ApiCallback<FriendListResponse>() {
+            @Override
+            public void onSuccess(FriendListResponse result, String message) {
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onError(int statusCode, String message) {
+                callback.onError(statusCode, message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                callback.onNetworkError(message);
+            }
+        });
     }
 
     /**
      * Cancel friend request
      */
     public void cancelFriendRequest(String requestId, ApiCallback<Object> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
-        apiService.cancelFriendRequest(accessToken, requestId).enqueue(callback);
+        Call<ApiResponse<Object>> call = apiService.cancelFriendRequest(authHeader, requestId);
+        call.enqueue(callback);
     }
 
     /**
-     * Search friends - FIXED
-     */
-    public void searchFriends(String query, int page, int limit, FriendshipCallback<FriendListResponse> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
-            return;
-        }
-
-        apiService.searchFriends(accessToken, query, page, limit).enqueue(new Callback<ApiResponse<FriendListResponse>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<FriendListResponse>> call, Response<ApiResponse<FriendListResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<FriendListResponse> apiResponse = response.body();
-                    if (apiResponse.getResult() != null) {
-                        callback.onSuccess(apiResponse.getResult());
-                    } else {
-                        callback.onError(response.code(), "No data received");
-                    }
-                } else {
-                    callback.onError(response.code(), "Failed to search friends");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse<FriendListResponse>> call, Throwable t) {
-                callback.onNetworkError(t.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Search users (for finding new friends) - FIXED
-     */
-    public void searchUsers(String query, int page, int limit, FriendshipCallback<UserListResponse> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
-            return;
-        }
-
-        apiService.searchUsers(accessToken, query, page, limit).enqueue(new Callback<ApiResponse<UserListResponse>>() {
-            @Override
-            public void onResponse(Call<ApiResponse<UserListResponse>> call, Response<ApiResponse<UserListResponse>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<UserListResponse> apiResponse = response.body();
-                    if (apiResponse.getResult() != null) {
-                        callback.onSuccess(apiResponse.getResult());
-                    } else {
-                        callback.onError(response.code(), "No data received");
-                    }
-                } else {
-                    callback.onError(response.code(), "Failed to search users");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ApiResponse<UserListResponse>> call, Throwable t) {
-                callback.onNetworkError(t.getMessage());
-            }
-        });
-    }
-
-    /**
-     * Get all users in system - ADDED
+     * Get all users - FIXED: Sử dụng đúng API endpoint
      */
     public void getAllUsers(int page, int limit, FriendshipCallback<UserListResponse> callback) {
-        // Use getFriendshipSuggestions as getAllUsers might not exist
-        getFriendshipSuggestions(page, limit, callback);
-    }
-
-    /**
-     * Get sent friend requests - ADDED
-     */
-    public void getSentFriendRequests(int page, int limit, FriendshipCallback<FriendListResponse> callback) {
-        String accessToken = networkManager.getAuthorizationHeader();
-        if (accessToken == null) {
-            callback.onError(401, "No access token available");
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
             return;
         }
 
-        // Note: This endpoint might not exist in the API, using getFriendRequests as fallback
-        // You might need to implement this endpoint in your backend
-        getFriendRequests(page, limit, callback);
+        Call<ApiResponse<UserListResponse>> call = apiService.getAllUsers(authHeader, page, limit);
+        call.enqueue(new ApiCallback<UserListResponse>() {
+            @Override
+            public void onSuccess(UserListResponse result, String message) {
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onError(int statusCode, String message) {
+                callback.onError(statusCode, message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                callback.onNetworkError(message);
+            }
+        });
+    }
+
+    /**
+     * Search users
+     */
+    public void searchUsers(String query, int page, int limit, FriendshipCallback<UserListResponse> callback) {
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
+            return;
+        }
+
+        Call<ApiResponse<UserListResponse>> call = apiService.searchUsers(authHeader, query, page, limit);
+        call.enqueue(new ApiCallback<UserListResponse>() {
+            @Override
+            public void onSuccess(UserListResponse result, String message) {
+                callback.onSuccess(result);
+            }
+
+            @Override
+            public void onError(int statusCode, String message) {
+                callback.onError(statusCode, message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                callback.onNetworkError(message);
+            }
+        });
     }
 }

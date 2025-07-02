@@ -1,26 +1,90 @@
 package com.example.chat.utils;
 
+/**
+ * Helper class for handling pagination logic
+ */
 public class PaginationHelper {
-    private int currentPage = 1;
+
+    private int currentPage;
     private int pageSize;
-    private int totalPages = 1;
-    private boolean isLoading = false;
-    private boolean hasMore = true;
+    private int totalPages;
+    private boolean isLoading;
+    private boolean hasMore;
 
     public PaginationHelper(int pageSize) {
         this.pageSize = pageSize;
+        this.currentPage = 1;
+        this.totalPages = 0;
+        this.isLoading = false;
+        this.hasMore = true;
     }
 
+    /**
+     * Reset pagination to initial state
+     */
+    public void reset() {
+        this.currentPage = 1;
+        this.totalPages = 0;
+        this.isLoading = false;
+        this.hasMore = true;
+    }
+
+    /**
+     * Update pagination info after receiving response
+     */
+    public void updatePagination(int totalPages) {
+        this.totalPages = totalPages;
+        this.hasMore = currentPage < totalPages;
+        this.isLoading = false;
+    }
+
+    /**
+     * Increment current page for next load
+     */
+    public void incrementPage() {
+        if (canLoadMore()) {
+            currentPage++;
+        }
+    }
+
+    /**
+     * Check if more data can be loaded
+     */
+    public boolean canLoadMore() {
+        return hasMore && !isLoading && (totalPages == 0 || currentPage < totalPages);
+    }
+
+    /**
+     * Get next page number without incrementing current page
+     */
+    public int getNextPage() {
+        return currentPage + 1;
+    }
+
+    // Getters and Setters
     public int getCurrentPage() {
         return currentPage;
+    }
+
+    public void setCurrentPage(int currentPage) {
+        this.currentPage = currentPage;
     }
 
     public int getPageSize() {
         return pageSize;
     }
 
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
     public int getTotalPages() {
         return totalPages;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+        this.hasMore = currentPage < totalPages;
     }
 
     public boolean isLoading() {
@@ -35,39 +99,49 @@ public class PaginationHelper {
         return hasMore;
     }
 
-    public boolean canLoadMore() {
-        return !isLoading && hasMore && currentPage < totalPages;
+    public void setHasMore(boolean hasMore) {
+        this.hasMore = hasMore;
     }
 
-    public void incrementPage() {
-        if (currentPage < totalPages) {
-            currentPage++;
+    /**
+     * Check if this is the first page
+     */
+    public boolean isFirstPage() {
+        return currentPage == 1;
+    }
+
+    /**
+     * Check if this is the last page
+     */
+    public boolean isLastPage() {
+        return totalPages > 0 && currentPage >= totalPages;
+    }
+
+    /**
+     * Get total items count estimate based on current page and page size
+     */
+    public int getEstimatedTotalItems() {
+        if (totalPages > 0) {
+            return totalPages * pageSize;
         }
+        return 0;
     }
 
-    public int getNextPage() {
-        return currentPage + 1;
+    /**
+     * Get current offset for database queries
+     */
+    public int getCurrentOffset() {
+        return (currentPage - 1) * pageSize;
     }
 
-    public void updatePagination(int totalPages) {
-        this.totalPages = totalPages;
-        this.hasMore = currentPage < totalPages;
-        this.isLoading = false;
-    }
-
-    public void reset() {
-        currentPage = 1;
-        totalPages = 1;
-        isLoading = false;
-        hasMore = true;
-    }
-
-    public void setCurrentPage(int page) {
-        this.currentPage = page;
-    }
-
-    public void setTotalPages(int totalPages) {
-        this.totalPages = totalPages;
-        this.hasMore = currentPage < totalPages;
+    @Override
+    public String toString() {
+        return "PaginationHelper{" +
+                "currentPage=" + currentPage +
+                ", pageSize=" + pageSize +
+                ", totalPages=" + totalPages +
+                ", isLoading=" + isLoading +
+                ", hasMore=" + hasMore +
+                '}';
     }
 }

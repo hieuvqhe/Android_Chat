@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_find_friends"
+        android:icon="@drawable/ic_search"
+        android:title="Find Friends" />
+
+    <item
+        android:id="@+id/navigation_my_friends"
+        android:icon="@drawable/ic_people"
+        android:title="My Friends" />
+
+    <item
+        android:id="@+id/navigation_friend_requests"
+        android:icon="@drawable/ic_person_add"
+        android:title="Requests" />
+
+    <item
+        android:id="@+id/navigation_sent_requests"
+        android:icon="@drawable/ic_send"
+        android:title="Sent" />
+
+</menu>

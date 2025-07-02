@@ -20,7 +20,7 @@ public class Friend {
     private Date updatedAt;
 
     @SerializedName("status")
-    private int status; // 1 = pending, 2 = accepted, 3 = rejected
+    private int status; // FIXED: 0 = pending, 1 = accepted, 2 = rejected (based on actual API)
 
     @SerializedName("activeStatus")
     private int activeStatus; // 1 = active, 0 = inactive
@@ -29,6 +29,11 @@ public class Friend {
     @SerializedName("user")
     private UserInfo user;
 
+    // FIXED: Backend trả về "friend_info", không phải "friend"
+    @SerializedName("friend_info")
+    private UserInfo friendInfo;
+
+    // Keep the old field for backward compatibility
     @SerializedName("friend")
     private UserInfo friend;
 
@@ -107,25 +112,41 @@ public class Friend {
         this.friend = friend;
     }
 
-    // Helper methods
+    public UserInfo getFriendInfo() {
+        return friendInfo;
+    }
+
+    public void setFriendInfo(UserInfo friendInfo) {
+        this.friendInfo = friendInfo;
+    }
+
+    // FIXED: Helper methods with correct status values (0,1,2)
     public boolean isPending() {
-        return status == 1;
+        return status == 0;  // Changed from 1 to 0
     }
 
     public boolean isAccepted() {
-        return status == 2;
+        return status == 1;  // Changed from 2 to 1
     }
 
     public boolean isRejected() {
-        return status == 3;
+        return status == 2;  // Changed from 3 to 2
     }
 
     public boolean isActive() {
         return activeStatus == 1;
     }
 
-    // Add getFriendInfo() method for compatibility
-    public UserInfo getFriendInfo() {
-        return friend != null ? friend : user;
+    // FIXED: Get friend user info with priority order
+    public UserInfo getFriendUser() {
+        // Priority: friendInfo > friend > user
+        if (friendInfo != null) {
+            return friendInfo;
+        } else if (friend != null) {
+            return friend;
+        } else if (user != null) {
+            return user;
+        }
+        return null;
     }
 }

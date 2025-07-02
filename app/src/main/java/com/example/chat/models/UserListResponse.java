@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class UserListResponse {
-    @SerializedName("friend_suggestions")
+    // FIX: Backend trả về field name là "result", không phải "friend_suggestions"
+    @SerializedName("result")
     private List<UserInfo> result;
 
     @SerializedName("total")

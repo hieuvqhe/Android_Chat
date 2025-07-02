@@ -3,7 +3,11 @@ package com.example.chat.models;
 import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
+/**
+ * Model class for User Information
+ */
 public class UserInfo {
+
     @SerializedName("_id")
     private String id;
 
@@ -13,20 +17,11 @@ public class UserInfo {
     @SerializedName("email")
     private String email;
 
-    @SerializedName("avatar")
-    private String avatar;
-
     @SerializedName("bio")
     private String bio;
 
-    @SerializedName("location")
-    private String location;
-
-    @SerializedName("website")
-    private String website;
-
-    @SerializedName("verify")
-    private int verify; // 0 = unverified, 1 = verified, 2 = banned
+    @SerializedName("avatar")
+    private String avatar;
 
     @SerializedName("created_at")
     private Date createdAt;
@@ -34,23 +29,28 @@ public class UserInfo {
     @SerializedName("updated_at")
     private Date updatedAt;
 
-    // Additional fields that might be present
+    @SerializedName("verify")
+    private int verify; // 0 = unverified, 1 = verified
+
+    @SerializedName("active_status")
+    private int activeStatus; // 0 = offline, 1 = online
+
     @SerializedName("date_of_birth")
     private Date dateOfBirth;
+
+    @SerializedName("phone_number")
+    private String phoneNumber;
 
     @SerializedName("cover_photo")
     private String coverPhoto;
 
-    @SerializedName("active_status")
-    private int activeStatus; // For online/offline status
+    @SerializedName("website")
+    private String website;
+
+    @SerializedName("location")
+    private String location;
 
     public UserInfo() {}
-
-    public UserInfo(String id, String username, String email) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-    }
 
     // Getters and Setters
     public String getId() {
@@ -77,14 +77,6 @@ public class UserInfo {
         this.email = email;
     }
 
-    public String getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
-    }
-
     public String getBio() {
         return bio;
     }
@@ -93,28 +85,12 @@ public class UserInfo {
         this.bio = bio;
     }
 
-    public String getLocation() {
-        return location;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public int getVerify() {
-        return verify;
-    }
-
-    public void setVerify(int verify) {
-        this.verify = verify;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Date getCreatedAt() {
@@ -133,20 +109,12 @@ public class UserInfo {
         this.updatedAt = updatedAt;
     }
 
-    public Date getDateOfBirth() {
-        return dateOfBirth;
+    public int getVerify() {
+        return verify;
     }
 
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public String getCoverPhoto() {
-        return coverPhoto;
-    }
-
-    public void setCoverPhoto(String coverPhoto) {
-        this.coverPhoto = coverPhoto;
+    public void setVerify(int verify) {
+        this.verify = verify;
     }
 
     public int getActiveStatus() {
@@ -157,13 +125,49 @@ public class UserInfo {
         this.activeStatus = activeStatus;
     }
 
+    public Date getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(Date dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getCoverPhoto() {
+        return coverPhoto;
+    }
+
+    public void setCoverPhoto(String coverPhoto) {
+        this.coverPhoto = coverPhoto;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
     // Helper methods
     public boolean isVerified() {
         return verify == 1;
-    }
-
-    public boolean isBanned() {
-        return verify == 2;
     }
 
     public boolean isOnline() {
@@ -171,20 +175,34 @@ public class UserInfo {
     }
 
     public String getDisplayName() {
-        return username != null && !username.isEmpty() ? username : email;
+        if (username != null && !username.trim().isEmpty() && !username.equals("null")) {
+            return username;
+        } else if (email != null && !email.trim().isEmpty() && !email.equals("null")) {
+            return email;
+        }
+        return "Unknown User";
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        UserInfo userInfo = (UserInfo) obj;
-        return id != null ? id.equals(userInfo.id) : userInfo.id == null;
+    // FIXED: Add null-safe getters for common operations
+    public String getSafeBio() {
+        if (bio != null && !bio.trim().isEmpty() && !bio.equals("null")) {
+            return bio;
+        }
+        return "";
     }
 
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+    public String getSafeAvatar() {
+        if (avatar != null && !avatar.trim().isEmpty() && !avatar.equals("null")) {
+            return avatar;
+        }
+        return null;
+    }
+
+    public String getSafeEmail() {
+        if (email != null && !email.trim().isEmpty() && !email.equals("null")) {
+            return email;
+        }
+        return "";
     }
 
     @Override
@@ -193,7 +211,9 @@ public class UserInfo {
                 "id='" + id + '\'' +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", verified=" + isVerified() +
+                ", bio='" + bio + '\'' +
+                ", verify=" + verify +
+                ", activeStatus=" + activeStatus +
                 '}';
     }
 }

@@ -48,18 +48,18 @@ public interface ApiService {
 
     // ==================== FRIEND MANAGEMENT ENDPOINTS ====================
 
-    // Add friend endpoint - FIXED: Changed response type
+    // Add friend endpoint
     @POST("api/v1/friend-requests/add")
     Call<ApiResponse<Friend>> addFriend(
             @Header("Authorization") String accessToken,
             @Body AddFriendRequest request
     );
 
-    // Unfriend endpoint
-    @DELETE("api/v1/friend-requests/unfriend/{friend_id}")
+    // Unfriend endpoint - FIXED: đúng với backend route
+    @DELETE("api/v1/friend-requests/unfriend/{friendship_id}")
     Call<ApiResponse<Object>> unfriend(
             @Header("Authorization") String accessToken,
-            @Path("friend_id") String friendId
+            @Path("friendship_id") String friendshipId
     );
 
     // Get friendship suggestions
@@ -86,18 +86,18 @@ public interface ApiService {
             @Query("limit") int limit
     );
 
-    // Accept friend request - FIXED: Changed parameter name to match backend
-    @POST("api/v1/friend-requests/accept/{accept_friend_id}")
+    // Accept friend request - FIXED: đúng với backend route
+    @POST("api/v1/friend-requests/accept/{friendship_id}")
     Call<ApiResponse<Friend>> acceptFriendRequest(
             @Header("Authorization") String accessToken,
-            @Path("accept_friend_id") String acceptFriendId
+            @Path("friendship_id") String friendshipId
     );
 
-    // Reject friend request - FIXED: Changed parameter name to match backend
-    @DELETE("api/v1/friend-requests/reject/{reject_friend_id}")
+    // Reject friend request - FIXED: đúng với backend route
+    @DELETE("api/v1/friend-requests/reject/{friendship_id}")
     Call<ApiResponse<Friend>> rejectFriendRequest(
             @Header("Authorization") String accessToken,
-            @Path("reject_friend_id") String rejectFriendId
+            @Path("friendship_id") String friendshipId
     );
 
     // Search friends
@@ -109,26 +109,34 @@ public interface ApiService {
             @Query("limit") int limit
     );
 
-    // Cancel friend request - FIXED: Endpoint path
-    @DELETE("api/v1/friend-requests/cancel_request_id")
+    // Cancel friend request - FIXED: đúng với backend route
+    @DELETE("api/v1/friend-requests/cancel/{cancel_request_id}")
     Call<ApiResponse<Object>> cancelFriendRequest(
             @Header("Authorization") String accessToken,
-            @Query("cancel_request_id") String cancelRequestId
+            @Path("cancel_request_id") String cancelRequestId
     );
 
-    // Get all users in system - This endpoint might not exist, check your backend
-    @GET("api/v1/users/all-users")
+    // Get all users in system - FIXED: sử dụng đúng endpoint từ backend
+    @GET("api/v1/friend-requests/all-users")
     Call<ApiResponse<UserListResponse>> getAllUsers(
             @Header("Authorization") String accessToken,
             @Query("page") int page,
             @Query("limit") int limit
     );
 
-    // Search users - This might be the friendship suggestions endpoint
-    @GET("api/v1/friend-requests/friendship-suggestions")
+    // Search users - FIXED: sử dụng đúng endpoint từ backend
+    @GET("api/v1/friend-requests/search-users")
     Call<ApiResponse<UserListResponse>> searchUsers(
             @Header("Authorization") String accessToken,
             @Query("search") String searchQuery,
+            @Query("page") int page,
+            @Query("limit") int limit
+    );
+
+    // Get sent friend requests - FIXED: thêm endpoint từ backend
+    @GET("api/v1/friend-requests/get-requests-sent")
+    Call<ApiResponse<FriendListResponse>> getSentFriendRequests(
+            @Header("Authorization") String accessToken,
             @Query("page") int page,
             @Query("limit") int limit
     );
