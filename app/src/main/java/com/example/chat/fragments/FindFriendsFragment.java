@@ -20,7 +20,6 @@ import com.example.chat.R;
 import com.example.chat.adapters.FindUsersAdapter;
 import com.example.chat.models.Friend;
 import com.example.chat.models.UserInfo;
-import com.example.chat.models.UserListResponse;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import com.example.chat.services.FriendshipService;
@@ -157,7 +156,7 @@ public class FindFriendsFragment extends Fragment {
     }
 
     /**
-     * Load tất cả users
+     * Load tất cả users - FIXED: Sử dụng List<UserInfo> callback
      */
     private void loadUsers() {
         if (paginationHelper.isLoading()) return;
@@ -166,27 +165,29 @@ public class FindFriendsFragment extends Fragment {
         paginationHelper.setLoading(true);
 
         friendshipService.getAllUsers(paginationHelper.getCurrentPage(), paginationHelper.getPageSize(),
-                new FriendshipService.FriendshipCallback<UserListResponse>() {
+                new FriendshipService.FriendshipCallback<List<UserInfo>>() {
                     @Override
-                    public void onSuccess(UserListResponse response) {
+                    public void onSuccess(List<UserInfo> users, int page, int totalPages) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 showLoading(false);
                                 swipeRefreshLayout.setRefreshing(false);
 
-                                if (response.getUsers() != null) {
+                                if (users != null) {
                                     if (paginationHelper.getCurrentPage() == 1) {
                                         usersList.clear();
                                     }
-                                    usersList.addAll(response.getUsers());
+                                    usersList.addAll(users);
                                     usersAdapter.notifyDataSetChanged();
 
-                                    paginationHelper.updatePagination(response.getTotalPages());
+                                    paginationHelper.updatePagination(totalPages);
 
                                     updateEmptyState();
 
-                                    Log.d(TAG, "Loaded " + response.getUsers().size() + " users. Page " +
-                                            paginationHelper.getCurrentPage() + "/" + response.getTotalPages());
+                                    Log.d(TAG, "✅ Loaded " + users.size() + " users. Page " + page + "/" + totalPages);
+                                } else {
+                                    Log.w(TAG, "Users list is null");
+                                    updateEmptyState();
                                 }
                             });
                         }
@@ -200,6 +201,7 @@ public class FindFriendsFragment extends Fragment {
                                 swipeRefreshLayout.setRefreshing(false);
                                 paginationHelper.setLoading(false);
 
+                                Log.e(TAG, "❌ Error loading users: " + statusCode + " - " + message);
                                 Toast.makeText(getContext(), "Error: " + message, Toast.LENGTH_SHORT).show();
                                 updateEmptyState();
                             });
@@ -214,6 +216,7 @@ public class FindFriendsFragment extends Fragment {
                                 swipeRefreshLayout.setRefreshing(false);
                                 paginationHelper.setLoading(false);
 
+                                Log.e(TAG, "🌐 Network error: " + message);
                                 Toast.makeText(getContext(), "Network error: " + message, Toast.LENGTH_SHORT).show();
                                 updateEmptyState();
                             });
@@ -249,7 +252,7 @@ public class FindFriendsFragment extends Fragment {
     }
 
     /**
-     * Search users
+     * Search users - FIXED: Sử dụng List<UserInfo> callback
      */
     private void searchUsers(String query) {
         searchUsers(query, false);
@@ -276,28 +279,28 @@ public class FindFriendsFragment extends Fragment {
         int page = loadMore ? paginationHelper.getNextPage() : 1;
 
         friendshipService.searchUsers(query, page, paginationHelper.getPageSize(),
-                new FriendshipService.FriendshipCallback<UserListResponse>() {
+                new FriendshipService.FriendshipCallback<List<UserInfo>>() {
                     @Override
-                    public void onSuccess(UserListResponse response) {
+                    public void onSuccess(List<UserInfo> users, int page, int totalPages) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 showLoading(false);
 
-                                if (response.getUsers() != null) {
+                                if (users != null) {
                                     if (!loadMore) {
                                         usersList.clear();
                                     }
-                                    usersList.addAll(response.getUsers());
+                                    usersList.addAll(users);
                                     usersAdapter.notifyDataSetChanged();
 
-                                    paginationHelper.updatePagination(response.getTotalPages());
+                                    paginationHelper.updatePagination(totalPages);
                                     if (loadMore) {
                                         paginationHelper.incrementPage();
                                     }
 
                                     updateEmptyState();
 
-                                    Log.d(TAG, "Found " + response.getUsers().size() + " users for query: " + query);
+                                    Log.d(TAG, "Found " + users.size() + " users for query: " + query);
                                 }
                             });
                         }

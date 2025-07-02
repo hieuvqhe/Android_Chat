@@ -17,7 +17,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.chat.R;
 import com.example.chat.adapters.SentRequestsAdapter;
 import com.example.chat.models.Friend;
-import com.example.chat.models.FriendListResponse;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import com.example.chat.services.FriendshipService;
@@ -137,27 +136,26 @@ public class SentRequestsFragment extends Fragment {
         paginationHelper.setLoading(true);
 
         friendshipService.getSentFriendRequests(paginationHelper.getCurrentPage(), paginationHelper.getPageSize(),
-                new FriendshipService.FriendshipCallback<FriendListResponse>() {
+                new FriendshipService.FriendshipCallback<List<Friend>>() {
                     @Override
-                    public void onSuccess(FriendListResponse response) {
+                    public void onSuccess(List<Friend> friends, int page, int totalPages) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 showLoading(false);
                                 swipeRefreshLayout.setRefreshing(false);
 
-                                if (response.getFriends() != null) {
-                                    if (paginationHelper.getCurrentPage() == 1) {
+                                if (friends != null) {
+                                    if (page == 1) {
                                         sentRequestsList.clear();
                                     }
-                                    sentRequestsList.addAll(response.getFriends());
+                                    sentRequestsList.addAll(friends);
                                     requestsAdapter.notifyDataSetChanged();
 
-                                    paginationHelper.updatePagination(response.getTotalPages());
+                                    paginationHelper.updatePagination(totalPages);
 
                                     updateEmptyState();
 
-                                    Log.d(TAG, "Loaded " + response.getFriends().size() + " sent requests. Page " +
-                                            paginationHelper.getCurrentPage() + "/" + response.getTotalPages());
+                                    Log.d(TAG, "Loaded " + friends.size() + " sent requests. Page " + page + "/" + totalPages);
                                 }
                             });
                         }

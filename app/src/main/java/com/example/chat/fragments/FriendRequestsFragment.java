@@ -17,7 +17,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.chat.R;
 import com.example.chat.adapters.FriendRequestsAdapter;
 import com.example.chat.models.Friend;
-import com.example.chat.models.FriendListResponse;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import com.example.chat.services.FriendshipService;
@@ -140,28 +139,30 @@ public class FriendRequestsFragment extends Fragment {
         showLoading(true);
         paginationHelper.setLoading(true);
 
+        // FIXED: Updated to match new FriendshipCallback signature with 3 parameters
         friendshipService.getFriendRequests(paginationHelper.getCurrentPage(), paginationHelper.getPageSize(),
-                new FriendshipService.FriendshipCallback<FriendListResponse>() {
+                new FriendshipService.FriendshipCallback<List<Friend>>() {
                     @Override
-                    public void onSuccess(FriendListResponse response) {
+                    public void onSuccess(List<Friend> friends, int page, int totalPages) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 showLoading(false);
                                 swipeRefreshLayout.setRefreshing(false);
+                                paginationHelper.setLoading(false);
 
-                                if (response.getFriends() != null) {
+                                if (friends != null) {
                                     if (paginationHelper.getCurrentPage() == 1) {
                                         requestsList.clear();
                                     }
-                                    requestsList.addAll(response.getFriends());
+                                    requestsList.addAll(friends);
                                     requestsAdapter.notifyDataSetChanged();
 
-                                    paginationHelper.updatePagination(response.getTotalPages());
+                                    paginationHelper.updatePagination(totalPages);
 
                                     updateEmptyState();
 
-                                    Log.d(TAG, "Loaded " + response.getFriends().size() + " friend requests. Page " +
-                                            paginationHelper.getCurrentPage() + "/" + response.getTotalPages());
+                                    Log.d(TAG, "Loaded " + friends.size() + " friend requests. Page " +
+                                            page + "/" + totalPages);
                                 }
                             });
                         }

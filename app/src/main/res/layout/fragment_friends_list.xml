@@ -103,7 +103,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Start by finding and adding friends!"
             android:textColor="?android:attr/textColorTertiary"
             android:textSize="14sp"
             android:visibility="gone" />

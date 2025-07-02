@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class FriendListResponse {
-    // FIX: Backend trả về field name là "result", không phải "friends"
+
     @SerializedName("result")
     private List<Friend> result;
 

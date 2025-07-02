@@ -19,7 +19,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.chat.R;
 import com.example.chat.adapters.FriendsListAdapter;
 import com.example.chat.models.Friend;
-import com.example.chat.models.FriendListResponse;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import com.example.chat.services.FriendshipService;
@@ -153,7 +152,7 @@ public class FriendsListFragment extends Fragment {
     }
 
     /**
-     * Load tất cả friends
+     * Load tất cả friends - FIXED: Sử dụng List<Friend> callback
      */
     private void loadFriends() {
         if (paginationHelper.isLoading()) return;
@@ -162,27 +161,30 @@ public class FriendsListFragment extends Fragment {
         paginationHelper.setLoading(true);
 
         friendshipService.getAllFriends(paginationHelper.getCurrentPage(), paginationHelper.getPageSize(),
-                new FriendshipService.FriendshipCallback<FriendListResponse>() {
+                new FriendshipService.FriendshipCallback<List<Friend>>() {
                     @Override
-                    public void onSuccess(FriendListResponse response) {
+                    public void onSuccess(List<Friend> friends, int page, int totalPages) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 showLoading(false);
                                 swipeRefreshLayout.setRefreshing(false);
 
-                                if (response.getFriends() != null) {
+                                if (friends != null) {
                                     if (paginationHelper.getCurrentPage() == 1) {
                                         friendsList.clear();
                                     }
-                                    friendsList.addAll(response.getFriends());
+                                    friendsList.addAll(friends);
                                     friendsAdapter.notifyDataSetChanged();
 
-                                    paginationHelper.updatePagination(response.getTotalPages());
+                                    paginationHelper.updatePagination(totalPages);
 
                                     updateEmptyState();
 
-                                    Log.d(TAG, "Loaded " + response.getFriends().size() + " friends. Page " +
-                                            paginationHelper.getCurrentPage() + "/" + response.getTotalPages());
+                                    Log.d(TAG, "✅ Loaded " + friends.size() + " friends. Page " +
+                                            paginationHelper.getCurrentPage() + "/" + totalPages);
+                                } else {
+                                    Log.w(TAG, "Friends list is null");
+                                    updateEmptyState();
                                 }
                             });
                         }
@@ -196,6 +198,7 @@ public class FriendsListFragment extends Fragment {
                                 swipeRefreshLayout.setRefreshing(false);
                                 paginationHelper.setLoading(false);
 
+                                Log.e(TAG, "❌ Error loading friends: " + statusCode + " - " + message);
                                 Toast.makeText(getContext(), "Error: " + message, Toast.LENGTH_SHORT).show();
                                 updateEmptyState();
                             });
@@ -210,6 +213,7 @@ public class FriendsListFragment extends Fragment {
                                 swipeRefreshLayout.setRefreshing(false);
                                 paginationHelper.setLoading(false);
 
+                                Log.e(TAG, "🌐 Network error: " + message);
                                 Toast.makeText(getContext(), "Network error: " + message, Toast.LENGTH_SHORT).show();
                                 updateEmptyState();
                             });
@@ -245,7 +249,7 @@ public class FriendsListFragment extends Fragment {
     }
 
     /**
-     * Search friends
+     * Search friends - FIXED: Sử dụng List<Friend> callback
      */
     private void searchFriends(String query) {
         searchFriends(query, false);
@@ -272,28 +276,28 @@ public class FriendsListFragment extends Fragment {
         int page = loadMore ? paginationHelper.getNextPage() : 1;
 
         friendshipService.searchFriends(query, page, paginationHelper.getPageSize(),
-                new FriendshipService.FriendshipCallback<FriendListResponse>() {
+                new FriendshipService.FriendshipCallback<List<Friend>>() {
                     @Override
-                    public void onSuccess(FriendListResponse response) {
+                    public void onSuccess(List<Friend> friends, int page, int totalPages) {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
                                 showLoading(false);
 
-                                if (response.getFriends() != null) {
+                                if (friends != null) {
                                     if (!loadMore) {
                                         friendsList.clear();
                                     }
-                                    friendsList.addAll(response.getFriends());
+                                    friendsList.addAll(friends);
                                     friendsAdapter.notifyDataSetChanged();
 
-                                    paginationHelper.updatePagination(response.getTotalPages());
+                                    paginationHelper.updatePagination(totalPages);
                                     if (loadMore) {
                                         paginationHelper.incrementPage();
                                     }
 
                                     updateEmptyState();
 
-                                    Log.d(TAG, "Found " + response.getFriends().size() + " friends for query: " + query);
+                                    Log.d(TAG, "Found " + friends.size() + " friends for query: " + query);
                                 }
                             });
                         }
@@ -338,7 +342,7 @@ public class FriendsListFragment extends Fragment {
      */
     private void startChatWithFriend(Friend friend) {
         // TODO: Navigate to chat activity
-        Toast.makeText(getContext(), "Starting chat with " + friend.getFriendInfo().getUsername(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Starting chat with " + friend.getFriendUser().getUsername(), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -346,7 +350,7 @@ public class FriendsListFragment extends Fragment {
      */
     private void viewFriendProfile(Friend friend) {
         // TODO: Navigate to profile activity
-        Toast.makeText(getContext(), "View profile: " + friend.getFriendInfo().getUsername(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "View profile: " + friend.getFriendUser().getUsername(), Toast.LENGTH_SHORT).show();
     }
 
     /**

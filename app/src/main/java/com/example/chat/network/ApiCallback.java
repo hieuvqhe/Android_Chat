@@ -19,6 +19,8 @@ public abstract class ApiCallback<T> implements Callback<ApiResponse<T>> {
         if (response.isSuccessful() && response.body() != null) {
             ApiResponse<T> apiResponse = response.body();
             Log.d(TAG, "Success response: " + apiResponse.getMessage());
+
+            // FIXED: Call with original 2 parameters only
             onSuccess(apiResponse.getResult(), apiResponse.getMessage());
         } else {
             // Handle error response
@@ -85,6 +87,7 @@ public abstract class ApiCallback<T> implements Callback<ApiResponse<T>> {
         onNetworkError(errorMessage);
     }
 
+    // Keep original method signatures for backwards compatibility
     public abstract void onSuccess(T result, String message);
     public abstract void onError(int statusCode, String message);
     public abstract void onNetworkError(String message);

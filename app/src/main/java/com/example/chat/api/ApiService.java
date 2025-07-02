@@ -9,6 +9,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import java.util.List;
 
 public interface ApiService {
 
@@ -55,87 +56,87 @@ public interface ApiService {
             @Body AddFriendRequest request
     );
 
-    // Unfriend endpoint - FIXED: đúng với backend route
+    // Unfriend endpoint
     @DELETE("api/v1/friend-requests/unfriend/{friendship_id}")
     Call<ApiResponse<Object>> unfriend(
             @Header("Authorization") String accessToken,
             @Path("friendship_id") String friendshipId
     );
 
-    // Get friendship suggestions
+    // FIXED: Get friendship suggestions - return List<UserInfo> directly
     @GET("api/v1/friend-requests/friendship-suggestions")
-    Call<ApiResponse<UserListResponse>> getFriendshipSuggestions(
+    Call<ApiResponse<List<UserInfo>>> getFriendshipSuggestions(
             @Header("Authorization") String accessToken,
             @Query("page") int page,
             @Query("limit") int limit
     );
 
-    // Get all friends
+    // FIXED: Get all friends - return List<Friend> directly
     @GET("api/v1/friend-requests/all-friends")
-    Call<ApiResponse<FriendListResponse>> getAllFriends(
+    Call<ApiResponse<List<Friend>>> getAllFriends(
             @Header("Authorization") String accessToken,
             @Query("page") int page,
             @Query("limit") int limit
     );
 
-    // Get friend requests (pending requests to accept)
+    // FIXED: Get friend requests - return List<Friend> directly
     @GET("api/v1/friend-requests/get-requests-accept")
-    Call<ApiResponse<FriendListResponse>> getFriendRequests(
+    Call<ApiResponse<List<Friend>>> getFriendRequests(
             @Header("Authorization") String accessToken,
             @Query("page") int page,
             @Query("limit") int limit
     );
 
-    // Accept friend request - FIXED: đúng với backend route
+    // Accept friend request
     @POST("api/v1/friend-requests/accept/{friendship_id}")
     Call<ApiResponse<Friend>> acceptFriendRequest(
             @Header("Authorization") String accessToken,
             @Path("friendship_id") String friendshipId
     );
 
-    // Reject friend request - FIXED: đúng với backend route
+    // Reject friend request
     @DELETE("api/v1/friend-requests/reject/{friendship_id}")
     Call<ApiResponse<Friend>> rejectFriendRequest(
             @Header("Authorization") String accessToken,
             @Path("friendship_id") String friendshipId
     );
 
-    // Search friends
+    // FIXED: Search friends - return List<Friend> directly
     @GET("api/v1/friend-requests/search-friends")
-    Call<ApiResponse<FriendListResponse>> searchFriends(
+    Call<ApiResponse<List<Friend>>> searchFriends(
             @Header("Authorization") String accessToken,
             @Query("search") String searchQuery,
             @Query("page") int page,
             @Query("limit") int limit
     );
 
-    // Cancel friend request - FIXED: đúng với backend route
+    // Cancel friend request
     @DELETE("api/v1/friend-requests/cancel/{cancel_request_id}")
     Call<ApiResponse<Object>> cancelFriendRequest(
             @Header("Authorization") String accessToken,
             @Path("cancel_request_id") String cancelRequestId
     );
 
-    // Get all users in system - FIXED: sử dụng đúng endpoint từ backend
+    // FIXED: Get all users - return List<UserInfo> directly
     @GET("api/v1/friend-requests/all-users")
-    Call<ApiResponse<UserListResponse>> getAllUsers(
+    Call<ApiResponse<List<UserInfo>>> getAllUsers(
             @Header("Authorization") String accessToken,
             @Query("page") int page,
             @Query("limit") int limit
     );
 
-    // Search users - FIXED: sử dụng đúng endpoint từ backend
+    // FIXED: Search users - return List<UserInfo> directly
     @GET("api/v1/friend-requests/search-users")
-    Call<ApiResponse<UserListResponse>> searchUsers(
+    Call<ApiResponse<List<UserInfo>>> searchUsers(
             @Header("Authorization") String accessToken,
             @Query("search") String searchQuery,
             @Query("page") int page,
             @Query("limit") int limit
     );
 
-    // Get sent friend requests - FIXED: thêm endpoint từ backend
+    // FIXED: Get sent friend requests - return List<Friend> directly
     @GET("api/v1/friend-requests/get-requests-sent")
-    Call<ApiResponse<FriendListResponse>> getSentFriendRequests(
+    Call<ApiResponse<List<Friend>>> getSentFriendRequests(
             @Header("Authorization") String accessToken,
             @Query("page") int page,
             @Query("limit") int limit
