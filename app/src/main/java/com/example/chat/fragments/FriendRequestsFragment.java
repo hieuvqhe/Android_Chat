@@ -14,6 +14,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.chat.FriendsActivity;
 import com.example.chat.R;
 import com.example.chat.adapters.FriendRequestsAdapter;
 import com.example.chat.models.Friend;
@@ -87,8 +89,10 @@ public class FriendRequestsFragment extends Fragment {
 
             @Override
             public void onViewProfile(Friend request) {
-                // TODO: Implement view profile
-                Toast.makeText(getContext(), "View profile coming soon", Toast.LENGTH_SHORT).show();
+                // UPDATED: Implement view profile functionality
+                if (getActivity() instanceof FriendsActivity) {
+                    ((FriendsActivity) getActivity()).openFriendProfile(request);
+                }
             }
         });
 

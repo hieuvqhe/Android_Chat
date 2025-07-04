@@ -16,6 +16,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.chat.FriendsActivity;
 import com.example.chat.R;
 import com.example.chat.adapters.FindUsersAdapter;
 import com.example.chat.models.Friend;
@@ -93,8 +95,10 @@ public class FindFriendsFragment extends Fragment {
 
             @Override
             public void onViewProfile(UserInfo user) {
-                // TODO: Implement view profile
-                Toast.makeText(getContext(), "View profile: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                // UPDATED: Implement view profile functionality
+                if (getActivity() instanceof FriendsActivity) {
+                    ((FriendsActivity) getActivity()).openUserProfile(user);
+                }
             }
         });
 
@@ -130,7 +134,6 @@ public class FindFriendsFragment extends Fragment {
                 R.color.colorAccent
         );
     }
-
     private void setupSearch() {
         editTextSearch.addTextChangedListener(new TextWatcher() {
             @Override

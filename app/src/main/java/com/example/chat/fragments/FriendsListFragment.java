@@ -16,12 +16,16 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.chat.FriendsActivity;
 import com.example.chat.R;
 import com.example.chat.adapters.FriendsListAdapter;
 import com.example.chat.models.Friend;
+import com.example.chat.models.UserInfo;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import com.example.chat.services.FriendshipService;
+import com.example.chat.utils.FriendUtils;
 import com.example.chat.utils.PaginationHelper;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
@@ -90,7 +94,10 @@ public class FriendsListFragment extends Fragment {
 
             @Override
             public void onViewProfile(Friend friend) {
-                viewFriendProfile(friend);
+                // UPDATED: Implement view profile functionality
+                if (getActivity() instanceof FriendsActivity) {
+                    ((FriendsActivity) getActivity()).openFriendProfile(friend);
+                }
             }
         });
 
@@ -125,6 +132,44 @@ public class FriendsListFragment extends Fragment {
                 R.color.colorPrimary,
                 R.color.colorAccent
         );
+    }
+
+    /**
+     * Hiển thị dialog xác nhận unfriend
+     */
+    private void showUnfriendDialog(Friend friend) {
+        // UPDATED: Create confirmation dialog for unfriend
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(getContext());
+
+        UserInfo friendUser = FriendUtils.getFriendUser(friend);
+        String friendName = friendUser != null ? FriendUtils.getUserDisplayName(friendUser) : "this user";
+
+        builder.setTitle("Unfriend " + friendName + "?")
+                .setMessage("Are you sure you want to remove " + friendName + " from your friends list?")
+                .setPositiveButton("Unfriend", (dialog, which) -> {
+                    unfriendUser(friend);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Unfriend user
+     */
+    private void unfriendUser(Friend friend) {
+        // TODO: Implement unfriend API call
+        Toast.makeText(getContext(), "Unfriend functionality will be implemented", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Bắt đầu chat với friend
+     */
+    private void startChatWithFriend(Friend friend) {
+        UserInfo friendUser = FriendUtils.getFriendUser(friend);
+        String friendName = friendUser != null ? FriendUtils.getUserDisplayName(friendUser) : "user";
+
+        // TODO: Navigate to chat activity
+        Toast.makeText(getContext(), "Starting chat with " + friendName, Toast.LENGTH_SHORT).show();
     }
 
     private void setupSearch() {
@@ -329,25 +374,6 @@ public class FriendsListFragment extends Fragment {
                 });
     }
 
-    /**
-     * Hiển thị dialog xác nhận unfriend
-     */
-    private void showUnfriendDialog(Friend friend) {
-        // TODO: Implement unfriend confirmation dialog
-        Toast.makeText(getContext(), "Unfriend feature will be implemented", Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Bắt đầu chat với friend
-     */
-    private void startChatWithFriend(Friend friend) {
-        // TODO: Navigate to chat activity
-        Toast.makeText(getContext(), "Starting chat with " + friend.getFriendUser().getUsername(), Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Xem profile của friend
-     */
     private void viewFriendProfile(Friend friend) {
         // TODO: Navigate to profile activity
         Toast.makeText(getContext(), "View profile: " + friend.getFriendUser().getUsername(), Toast.LENGTH_SHORT).show();

@@ -1,5 +1,6 @@
 package com.example.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -10,7 +11,10 @@ import com.example.chat.fragments.FindFriendsFragment;
 import com.example.chat.fragments.FriendRequestsFragment;
 import com.example.chat.fragments.FriendsListFragment;
 import com.example.chat.fragments.SentRequestsFragment;
+import com.example.chat.models.Friend;
+import com.example.chat.models.UserInfo;
 import com.example.chat.network.NetworkManager;
+import com.example.chat.utils.FriendUtils;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -165,6 +169,40 @@ public class FriendsActivity extends AppCompatActivity {
      */
     public void showLoading(boolean show) {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    // ================== PROFILE NAVIGATION METHODS ==================
+
+    /**
+     * Open user profile by username
+     */
+    public void openUserProfile(String username) {
+        if (username != null && !username.trim().isEmpty()) {
+            Intent intent = new Intent(this, UserProfileActivity.class);
+            intent.putExtra(UserProfileActivity.EXTRA_USERNAME, username);
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * Open user profile from UserInfo object
+     */
+    public void openUserProfile(UserInfo userInfo) {
+        if (userInfo != null && userInfo.getUsername() != null) {
+            openUserProfile(userInfo.getUsername());
+        }
+    }
+
+    /**
+     * Open friend profile from Friend object
+     */
+    public void openFriendProfile(Friend friend) {
+        if (friend != null) {
+            UserInfo friendUser = FriendUtils.getFriendUser(friend);
+            if (friendUser != null && friendUser.getUsername() != null) {
+                openUserProfile(friendUser.getUsername());
+            }
+        }
     }
 
     /**

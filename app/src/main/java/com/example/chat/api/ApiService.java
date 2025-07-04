@@ -7,6 +7,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import java.util.List;
@@ -141,4 +142,23 @@ public interface ApiService {
             @Query("page") int page,
             @Query("limit") int limit
     );
+
+    @GET("api/v1/users/me")
+    Call<ApiResponse<User>> getMyProfile(@Header("Authorization") String accessToken);
+
+    // Update my profile endpoint
+    @PUT("api/v1/users/me")
+    Call<ApiResponse<User>> updateMyProfile(
+            @Header("Authorization") String accessToken,
+            @Body UpdateProfileRequest request
+    );
+
+    // Get user profile by username
+    @GET("api/v1/users/{username}")
+    Call<ApiResponse<User>> getUserProfile(
+            @Header("Authorization") String accessToken,
+            @Path("username") String username
+    );
+
+
 }

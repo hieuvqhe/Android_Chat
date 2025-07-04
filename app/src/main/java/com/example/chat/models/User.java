@@ -1,8 +1,9 @@
 package com.example.chat.models;
 
 import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
 
-public class User {
+public class User implements Serializable {
     @SerializedName("_id")
     private String id;
 
@@ -16,7 +17,7 @@ public class User {
     private String name;
 
     @SerializedName("verify")
-    private int verify;
+    private Integer verify; // Use Integer to handle null values
 
     @SerializedName("bio")
     private String bio;
@@ -64,8 +65,8 @@ public class User {
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-    public int getVerify() { return verify; }
-    public void setVerify(int verify) { this.verify = verify; }
+    public Integer getVerify() { return verify; }
+    public void setVerify(Integer verify) { this.verify = verify; }
 
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }
@@ -90,4 +91,59 @@ public class User {
 
     public String getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    // Helper methods
+    public boolean isVerified() {
+        return verify != null && verify == 1;
+    }
+
+    public String getDisplayName() {
+        if (username != null && !username.trim().isEmpty() && !username.equals("null")) {
+            return username;
+        } else if (name != null && !name.trim().isEmpty() && !name.equals("null")) {
+            return name;
+        } else if (email != null && !email.trim().isEmpty() && !email.equals("null")) {
+            return email;
+        }
+        return "Unknown User";
+    }
+
+    // Safe getters for UI display
+    public String getSafeBio() {
+        if (bio != null && !bio.trim().isEmpty() && !bio.equals("null")) {
+            return bio;
+        }
+        return "";
+    }
+
+    public String getSafeLocation() {
+        if (location != null && !location.trim().isEmpty() && !location.equals("null")) {
+            return location;
+        }
+        return "";
+    }
+
+    public String getSafeWebsite() {
+        if (website != null && !website.trim().isEmpty() && !website.equals("null")) {
+            return website;
+        }
+        return "";
+    }
+
+    public String getSafeAvatar() {
+        if (avatar != null && !avatar.trim().isEmpty() && !avatar.equals("null")) {
+            return avatar;
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", verify=" + verify +
+                '}';
+    }
 }

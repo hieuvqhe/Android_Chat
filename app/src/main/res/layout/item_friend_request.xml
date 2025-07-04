@@ -85,7 +85,7 @@
                 android:layout_marginStart="6dp"
                 android:contentDescription="Verified user"
                 android:src="@drawable/ic_verified"
-                android:tint="@color/verified_blue"
+
                 android:visibility="gone"
                 tools:visibility="visible" />
 
