@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
+    android:fitsSystemWindows="true"
     tools:context=".EmailVerificationActivity">
 
     <!-- Background gradient overlay -->
@@ -33,143 +34,455 @@
             android:id="@+id/toolbarEmailVerification"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:title="Email Verification"
+            app:title="@string/email_verification_title"
             app:titleCentered="true"
-            app:titleTextColor="@android:color/white"
-            app:titleTextAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@android:color/white" />
+            app:titleTextColor="@color/md_theme_onPrimary"
+            app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+            app:navigationIcon="@drawable/ic_arrow_back_24"
+            app:navigationIconTint="@color/md_theme_onPrimary"
+            app:navigationContentDescription="Go back" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Main content card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/verificationCard"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="12dp"
-        app:cardBackgroundColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <!-- Scrollable content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:overScrollMode="never"
         app:layout_constraintTop_toBottomOf="@id/appBarLayoutEmailVerification"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.3">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="32dp"
-            android:gravity="center">
+            android:minHeight="600dp">
 
-            <!-- Email Verification Icon -->
+            <!-- Main verification card -->
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="50dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="?attr/colorPrimary">
+                android:id="@+id/verificationCard"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_large"
+                app:cardCornerRadius="@dimen/card_corner_radius_large"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/md_theme_surface"
+                app:strokeColor="@color/md_theme_outline"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.3"
+                app:layout_constraintWidth_max="400dp"
+                android:animateLayoutChanges="true">
 
-                <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_email"
-                    android:contentDescription="Email Verification Icon"
-                  />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_extra_large"
+                    android:gravity="center">
+
+                    <!-- Email Verification Icon -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="@dimen/icon_circle_large"
+                        android:layout_height="@dimen/icon_circle_large"
+                        android:layout_marginBottom="@dimen/spacing_large"
+                        app:cardCornerRadius="@dimen/icon_circle_radius"
+                        app:cardElevation="@dimen/card_elevation_small"
+                        app:cardBackgroundColor="@color/md_theme_primaryContainer">
+
+                        <ImageView
+                            android:layout_width="@dimen/icon_large"
+                            android:layout_height="@dimen/icon_large"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_mark_email_read_24"
+                            android:contentDescription="Email Verification Icon"
+                            app:tint="@color/md_theme_onPrimaryContainer" />
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Title -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/verify_email_title"
+                        android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                        android:textColor="@color/md_theme_onSurface"
+                        android:layout_marginBottom="@dimen/spacing_small"
+                        android:gravity="center" />
+
+                    <!-- Email address display -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_medium"
+                        app:cardCornerRadius="@dimen/card_corner_radius"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/md_theme_surfaceVariant"
+                        app:strokeColor="@color/md_theme_outline"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/spacing_medium"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_small"
+                                android:layout_height="@dimen/icon_small"
+                                android:layout_marginEnd="@dimen/spacing_small"
+                                android:src="@drawable/ic_email_24"
+                                app:tint="@color/md_theme_primary"
+                                android:contentDescription="Email icon" />
+
+                            <TextView
+                                android:id="@+id/textViewEmailAddress"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="user@example.com"
+                                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                                android:textColor="@color/md_theme_onSurfaceVariant"
+                                tools:text="john.doe@example.com" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Email message -->
+                    <TextView
+                        android:id="@+id/textViewEmailMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/verification_email_sent_description"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:layout_marginBottom="@dimen/spacing_medium"
+                        android:gravity="center"
+                        android:lineSpacingExtra="@dimen/line_spacing" />
+
+                    <!-- Status indicator -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/statusCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_large"
+                        android:visibility="gone"
+                        app:cardCornerRadius="@dimen/card_corner_radius"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/md_theme_primaryContainer"
+                        app:strokeColor="@color/md_theme_primary"
+                        app:strokeWidth="1dp"
+                        tools:visibility="visible">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/spacing_medium"
+                            android:gravity="center_vertical">
+
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/statusProgressIndicator"
+                                android:layout_width="@dimen/icon_small"
+                                android:layout_height="@dimen/icon_small"
+                                android:layout_marginEnd="@dimen/spacing_small"
+                                app:indicatorColor="@color/md_theme_primary"
+                                app:trackColor="@color/md_theme_surfaceVariant"
+                                app:indicatorSize="20dp"
+                                app:trackThickness="2dp"
+                                android:indeterminate="true" />
+
+                            <ImageView
+                                android:id="@+id/statusIcon"
+                                android:layout_width="@dimen/icon_small"
+                                android:layout_height="@dimen/icon_small"
+                                android:layout_marginEnd="@dimen/spacing_small"
+                                android:src="@drawable/ic_check_circle_24"
+                                app:tint="@color/md_theme_primary"
+                                android:contentDescription="Status icon"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/textViewStatusMessage"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/checking_verification_status"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                android:textColor="@color/md_theme_onPrimaryContainer" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Error message card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/errorCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_medium"
+                        android:visibility="gone"
+                        app:cardCornerRadius="@dimen/card_corner_radius"
+                        app:cardElevation="0dp"
+                        app:cardBackgroundColor="@color/md_theme_errorContainer"
+                        app:strokeColor="@color/md_theme_error"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/spacing_medium"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="@dimen/icon_small"
+                                android:layout_height="@dimen/icon_small"
+                                android:layout_marginEnd="@dimen/spacing_small"
+                                android:src="@drawable/ic_error_24"
+                                app:tint="@color/md_theme_error"
+                                android:contentDescription="Error icon" />
+
+                            <TextView
+                                android:id="@+id/textViewErrorMessage"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/verification_error"
+                                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                                android:textColor="@color/md_theme_onErrorContainer" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Action Buttons -->
+                    <!-- Verify Email Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonVerifyEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height"
+                        android:text="@string/check_verification_status"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="@color/md_theme_onPrimary"
+                        app:cornerRadius="@dimen/button_corner_radius"
+                        app:backgroundTint="@color/md_theme_primary"
+                        android:layout_marginBottom="@dimen/spacing_medium"
+                        app:elevation="@dimen/button_elevation"
+                        app:icon="@drawable/ic_refresh_24"
+                        app:iconGravity="textStart"
+                        app:iconTint="@color/md_theme_onPrimary"
+                        android:stateListAnimator="@animator/button_state_animator"
+                        style="@style/Widget.Material3.Button" />
+
+                    <!-- Resend Email Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonResendEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height"
+                        android:text="@string/resend_verification_email"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="@color/md_theme_primary"
+                        app:cornerRadius="@dimen/button_corner_radius"
+                        app:strokeColor="@color/md_theme_primary"
+                        app:strokeWidth="1dp"
+                        app:backgroundTint="@android:color/transparent"
+                        android:layout_marginBottom="@dimen/spacing_medium"
+                        app:icon="@drawable/ic_send_24"
+                        app:iconGravity="textStart"
+                        app:iconTint="@color/md_theme_primary"
+                        style="@style/Widget.Material3.Button.OutlinedButton" />
+
+                    <!-- Resend timer -->
+                    <TextView
+                        android:id="@+id/textViewResendTimer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/resend_available_in"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:layout_marginBottom="@dimen/spacing_large"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        tools:text="Resend available in 45 seconds"
+                        tools:visibility="visible" />
+
+                    <!-- Divider -->
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="@dimen/spacing_medium"
+                        app:dividerColor="@color/md_theme_outlineVariant" />
+
+                    <!-- Help section -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="@dimen/spacing_medium">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/didnt_receive_email_title"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                            android:textColor="@color/md_theme_onSurface"
+                            android:layout_marginBottom="@dimen/spacing_small"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/check_spam_folder_description"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                            android:textColor="@color/md_theme_onSurfaceVariant"
+                            android:layout_marginBottom="@dimen/spacing_small"
+                            android:gravity="center"
+                            android:lineSpacingExtra="@dimen/line_spacing" />
+
+                    </LinearLayout>
+
+                    <!-- Navigation Buttons -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonChangeEmail"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/button_height"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="@dimen/spacing_small"
+                            android:text="@string/change_email"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="@color/md_theme_onSurfaceVariant"
+                            app:cornerRadius="@dimen/button_corner_radius"
+                            android:backgroundTint="@android:color/transparent"
+                            app:icon="@drawable/ic_edit_24"
+                            app:iconGravity="textStart"
+                            app:iconTint="@color/md_theme_onSurfaceVariant"
+                            style="@style/Widget.Material3.Button.TextButton" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonBackToLogin"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/button_height"
+                            android:layout_weight="1"
+                            android:layout_marginStart="@dimen/spacing_small"
+                            android:text="@string/back_to_login"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="@color/md_theme_onSurfaceVariant"
+                            app:cornerRadius="@dimen/button_corner_radius"
+                            android:backgroundTint="@android:color/transparent"
+                            app:icon="@drawable/ic_login_24"
+                            app:iconGravity="textStart"
+                            app:iconTint="@color/md_theme_onSurfaceVariant"
+                            style="@style/Widget.Material3.Button.TextButton" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Title -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Success message card (initially hidden) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/successCard"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Verify Your Email"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginHorizontal="@dimen/spacing_large"
+                android:visibility="gone"
+                app:cardCornerRadius="@dimen/card_corner_radius_large"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/md_theme_surface"
+                app:strokeColor="@color/md_theme_outline"
+                app:strokeWidth="1dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintVertical_bias="0.3"
+                app:layout_constraintWidth_max="400dp"
+                android:animateLayoutChanges="true">
 
-            <!-- Email message -->
-            <TextView
-                android:id="@+id/textViewEmailMessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="We've sent a verification link to your email address. Please check your inbox and click the link to verify your account."
-                android:textSize="14sp"
-                android:textColor="?android:attr/textColorSecondary"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                android:lineSpacingExtra="2dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_extra_large"
+                    android:gravity="center">
 
-            <!-- Instruction text -->
-            <TextView
-                android:id="@+id/textViewInstruction"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="If you received the verification email, click the button below to verify manually:"
-                android:textSize="12sp"
-                android:textColor="?android:attr/textColorSecondary"
-                android:layout_marginBottom="24dp"
-                android:gravity="center"
-                android:lineSpacingExtra="2dp" />
+                    <!-- Success Icon -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="@dimen/icon_circle_large"
+                        android:layout_height="@dimen/icon_circle_large"
+                        android:layout_marginBottom="@dimen/spacing_large"
+                        app:cardCornerRadius="@dimen/icon_circle_radius"
+                        app:cardElevation="@dimen/card_elevation_small"
+                        app:cardBackgroundColor="@color/md_theme_primaryContainer">
 
-            <!-- Verify Email Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonVerifyEmail"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="VERIFY EMAIL"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                app:cornerRadius="12dp"
-                app:backgroundTint="?attr/colorPrimary"
-                android:layout_marginBottom="16dp"
-                app:elevation="4dp"
-                style="@style/Widget.MaterialComponents.Button" />
+                        <ImageView
+                            android:layout_width="@dimen/icon_large"
+                            android:layout_height="@dimen/icon_large"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_verified_24"
+                            android:contentDescription="Email Verified Icon"
+                            app:tint="@color/md_theme_onPrimaryContainer" />
 
-            <!-- Resend Email Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonResendEmail"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="RESEND EMAIL"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                app:cornerRadius="12dp"
-                app:strokeColor="?attr/colorPrimary"
-                app:strokeWidth="2dp"
-                android:layout_marginBottom="24dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    </com.google.android.material.card.MaterialCardView>
 
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/textColorSecondary"
-                android:alpha="0.3"
-                android:layout_marginVertical="16dp" />
+                    <!-- Success message -->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email_verified_title"
+                        android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                        android:textColor="@color/md_theme_onSurface"
+                        android:layout_marginBottom="@dimen/spacing_small"
+                        android:gravity="center" />
 
-            <!-- Back to Login Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonBackToLogin"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="BACK TO LOGIN"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorSecondary"
-                app:cornerRadius="12dp"
-                android:backgroundTint="@android:color/transparent"
-                style="@style/Widget.MaterialComponents.Button.TextButton" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/email_verified_description"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:layout_marginBottom="@dimen/spacing_extra_large"
+                        android:gravity="center"
+                        android:lineSpacingExtra="@dimen/line_spacing" />
 
-        </LinearLayout>
+                    <!-- Continue Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/buttonContinue"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/button_height"
+                        android:text="@string/continue_to_app"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                        android:textColor="@color/md_theme_onPrimary"
+                        app:cornerRadius="@dimen/button_corner_radius"
+                        app:backgroundTint="@color/md_theme_primary"
+                        app:elevation="@dimen/button_elevation"
+                        app:icon="@drawable/ic_arrow_forward_24"
+                        app:iconGravity="textEnd"
+                        app:iconTint="@color/md_theme_onPrimary"
+                        android:stateListAnimator="@animator/button_state_animator"
+                        style="@style/Widget.Material3.Button" />
 
-    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
