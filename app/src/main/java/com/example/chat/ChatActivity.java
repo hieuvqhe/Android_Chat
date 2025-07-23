@@ -25,6 +25,7 @@ import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import com.example.chat.services.ConversationService;
 import com.example.chat.services.MessageService;
+import com.example.chat.services.SocketService;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -66,6 +67,7 @@ public class ChatActivity extends AppCompatActivity {
     private MessageService messageService;
     private ConversationService conversationService;
     private NetworkManager networkManager;
+    private SocketService socketService;
 
     // Pagination
     private boolean isLoading = false;
@@ -75,6 +77,9 @@ public class ChatActivity extends AppCompatActivity {
 
     // Reply context
     private Message currentReplyToMessage = null;
+
+    // Socket listener reference
+    private SocketService.MessageListener messageListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,6 +246,79 @@ public class ChatActivity extends AppCompatActivity {
     private void initServices() {
         messageService = new MessageService(networkManager);
         conversationService = new ConversationService(networkManager);
+        socketService = SocketService.getInstance(this);
+
+        // Setup socket listeners
+        setupSocketListeners();
+
+        // Connect socket and join conversation
+        socketService.connect();
+        if (conversationId != null) {
+            socketService.joinConversation(conversationId);
+        }
+    }
+
+    private void setupSocketListeners() {
+        messageListener = new SocketService.MessageListener() {
+            @Override
+            public void onNewMessage(Message message) {
+                // Only add message if it's for this conversation
+                if (conversationId != null && conversationId.equals(message.getConversationId())) {
+                    runOnUiThread(() -> {
+                        messagesAdapter.addMessage(message);
+                        recyclerViewMessages.scrollToPosition(messagesAdapter.getItemCount() - 1);
+                        updateEmptyState();
+
+                        // Mark message as read if chat is active
+                        markMessagesAsRead();
+                    });
+                }
+            }
+
+            @Override
+            public void onMessageUpdated(Message message) {
+                if (conversationId != null && conversationId.equals(message.getConversationId())) {
+                    runOnUiThread(() -> {
+                        messagesAdapter.updateMessage(message);
+                    });
+                }
+            }
+
+            @Override
+            public void onMessageDeleted(String messageId) {
+                runOnUiThread(() -> {
+                    messagesAdapter.removeMessageById(messageId);
+                    updateEmptyState();
+                });
+            }
+
+            @Override
+            public void onTypingStart(String userId, String conversationId) {
+                if (ChatActivity.this.conversationId != null &&
+                    ChatActivity.this.conversationId.equals(conversationId) &&
+                    !userId.equals(currentUserId)) {
+                    runOnUiThread(() -> {
+                        // Show typing indicator
+                        // You can implement typing indicator UI here
+                        Log.d(TAG, "User " + userId + " is typing...");
+                    });
+                }
+            }
+
+            @Override
+            public void onTypingStop(String userId, String conversationId) {
+                if (ChatActivity.this.conversationId != null &&
+                    ChatActivity.this.conversationId.equals(conversationId) &&
+                    !userId.equals(currentUserId)) {
+                    runOnUiThread(() -> {
+                        // Hide typing indicator
+                        Log.d(TAG, "User " + userId + " stopped typing");
+                    });
+                }
+            }
+        };
+
+        socketService.addMessageListener(messageListener);
     }
 
     private void loadConversationDetails() {
@@ -687,6 +765,19 @@ public class ChatActivity extends AppCompatActivity {
     private void clearChat() {
         // TODO: Implement clear chat functionality
         Toast.makeText(this, "Clear chat feature coming soon", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Leave conversation and cleanup socket
+        if (socketService != null && conversationId != null) {
+            socketService.leaveConversation(conversationId);
+            if (messageListener != null) {
+                socketService.removeMessageListener(messageListener);
+            }
+        }
     }
 
     @Override

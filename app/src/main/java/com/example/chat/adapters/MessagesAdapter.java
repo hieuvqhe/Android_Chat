@@ -319,6 +319,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     /**
+     * Remove message by ID
+     */
+    public void removeMessageById(String messageId) {
+        for (int i = 0; i < messagesList.size(); i++) {
+            if (messagesList.get(i).getId().equals(messageId)) {
+                messagesList.remove(i);
+                notifyItemRemoved(i);
+                break;
+            }
+        }
+    }
+
+    /**
      * Clear all messages
      */
     public void clearMessages() {

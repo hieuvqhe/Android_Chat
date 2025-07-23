@@ -3,6 +3,8 @@ package com.example.chat;
 import android.app.Application;
 import android.util.Log;
 import com.example.chat.network.NetworkManager;
+import com.example.chat.services.NotificationService;
+import com.example.chat.services.SocketService;
 
 public class ChatApplication extends Application {
     private static final String TAG = "ChatApplication";
@@ -15,8 +17,17 @@ public class ChatApplication extends Application {
             // Initialize NetworkManager early to catch any initialization issues
             NetworkManager.getInstance(this);
             Log.d(TAG, "NetworkManager initialized successfully");
+
+            // Initialize NotificationService
+            NotificationService.getInstance(this);
+            Log.d(TAG, "NotificationService initialized successfully");
+
+            // Initialize SocketService
+            SocketService.getInstance(this);
+            Log.d(TAG, "SocketService initialized successfully");
+
         } catch (Exception e) {
-            Log.e(TAG, "Failed to initialize NetworkManager", e);
+            Log.e(TAG, "Failed to initialize services", e);
             // Don't crash the app, just log the error
             // The app will handle this gracefully in MainActivity
         }
