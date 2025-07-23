@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/main"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@drawable/gradient_background"
+android:fitsSystemWindows="true"
+tools:context=".WelcomeUserActivity">
+
+<!-- Background gradient overlay -->
+<View
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_background_overlay"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/appBarLayoutRegister" />
+
+<!-- AppBar with back button -->
+<com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/appBarLayoutRegister"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent"
+    android:elevation="0dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarRegister"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:navigationContentDescription="Go back"
+        app:navigationIcon="@drawable/ic_arrow_back_24"
+        app:navigationIconTint="@color/md_theme_onPrimary"
+        app:title=""
+        app:titleCentered="true"
+        app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        app:titleTextColor="@color/md_theme_onPrimary" />
+
+</com.google.android.material.appbar.AppBarLayout>
+
+<!-- Scrollable content -->
+<LinearLayout
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    app:layout_constraintBottom_toBottomOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="600dp"
+        android:paddingHorizontal="@dimen/spacing_large"
+        android:paddingVertical="@dimen/spacing_medium">
+
+        <!-- Main registration card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/registerCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            app:cardBackgroundColor="@color/md_theme_surface"
+            app:cardCornerRadius="@dimen/card_corner_radius_large"
+            app:cardElevation="@dimen/card_elevation"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintWidth_max="420dp"
+            app:strokeColor="@color/md_theme_outline"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_extra_large">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    android:gravity="center">
+
+                    <RelativeLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/circular_background"
+                        android:backgroundTint="@color/gray_dark">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="1"
+                            android:textColor="@color/white"
+                            android:textSize="18sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/circular_background"
+                        android:backgroundTint="@color/gray_dark">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="2"
+                            android:textColor="@color/white"
+                            android:textSize="18sp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/circular_background"
+                        android:backgroundTint="@color/primary_color">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="3"
+                            android:textColor="@color/white"
+                            android:textSize="18sp" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+
+                <!-- App Icon -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="50sp"
+                    android:layout_height="50sp"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/spacing_large"
+                    app:cardBackgroundColor="@color/md_theme_primaryContainer"
+                    app:cardCornerRadius="@dimen/icon_circle_medium_radius"
+                    app:cardElevation="@dimen/card_elevation_small">
+
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Create Account Icon"
+                        android:src="@drawable/base_user"
+                        app:tint="@color/md_theme_onPrimaryContainer" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Title and description -->
+                <TextView
+                    android:id="@+id/text_welcome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/spacing_small"
+                    android:gravity="center"
+                    android:text="What should we call you?"
+                    android:textSize="20dp"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
+                    android:textColor="@color/md_theme_onSurface" />
+
+                <!-- Input Fields -->
+                <!-- Username Input -->
+                <EditText
+                    android:id="@+id/phone_number_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/edit_text_rounded_corner"
+                    android:elevation="5dp"
+                    android:hint="User Name"
+                    android:inputType="phone"
+                    android:padding="10dp" />
+
+                <!-- Create Account Button with loading -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/sendOtpButton"
+                    style="@style/Widget.Material3.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_marginBottom="@dimen/spacing_medium"
+                    android:stateListAnimator="@animator/button_state_animator"
+                    android:text="Chat now"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textColor="@color/md_theme_onPrimary"
+                    app:backgroundTint="@color/md_theme_primary"
+                    app:cornerRadius="@dimen/button_corner_radius"
+                    app:elevation="@dimen/button_elevation"
+                    app:icon="@drawable/ic_chat"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/md_theme_onPrimary"
+                    />
+
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

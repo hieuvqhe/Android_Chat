@@ -37,7 +37,6 @@ public class RegisterActivity extends AppCompatActivity {
     private MaterialCheckBox checkBoxTerms;
     private MaterialCardView registerCard;
     private MaterialToolbar toolbar;
-
     private NetworkManager networkManager;
 
     @Override

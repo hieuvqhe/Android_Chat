@@ -20,6 +20,14 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.chat.models.ApiResponse;
+import com.example.chat.models.LoginRequest;
+import com.example.chat.models.LoginResponseData;
+import com.example.chat.models.RegisterRequest;
+import com.example.chat.models.RegisterResponseData;
+import com.example.chat.models.User;
+import com.example.chat.network.ApiCallback;
+import com.example.chat.network.NetworkManager;
 import com.example.chat.utils.AndroidUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +41,8 @@ import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
+
+import retrofit2.Call;
 
 public class PhoneLoginOtpActivity extends AppCompatActivity {
 
@@ -50,6 +60,9 @@ public class PhoneLoginOtpActivity extends AppCompatActivity {
     PhoneAuthProvider.ForceResendingToken token;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+    private NetworkManager networkManager;
+    private static final String TAG = "LoginActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,12 +74,7 @@ public class PhoneLoginOtpActivity extends AppCompatActivity {
             setupClickListeners();
             sendOtp(configPhoneNumber(phoneNumber), false);
 
-            nextButton.setOnClickListener(v -> {
-                String enteredOTP = otpCodeInput.getText().toString();
-                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationCode, enteredOTP);
-                signIn(credential);
-            });
-
+            networkManager = NetworkManager.getInstance(this);
         } catch (Exception e) {
             Toast.makeText(this, "App initialization failed", Toast.LENGTH_SHORT).show();
             finish();
@@ -116,6 +124,12 @@ public class PhoneLoginOtpActivity extends AppCompatActivity {
             });
         }
 
+        nextButton.setOnClickListener(v -> {
+            String enteredOTP = otpCodeInput.getText().toString();
+            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationCode, enteredOTP);
+            signIn(credential);
+        });
+
         startOtpCountdown(resendOtpText);
     }
 
@@ -161,17 +175,69 @@ public class PhoneLoginOtpActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    AndroidUtil.showToast(getApplicationContext(), "Login successful! Redirect to Chatbox");
-                    // Need to fix the redirect to user info UserInfo.class
-                    Intent intent = new Intent(PhoneLoginOtpActivity.this, LoginActivity.class);
-                    intent.putExtra("phone", phoneNumber);
-                    startActivity(intent);
+                    performRegistration(configPhoneToMail(phoneNumber), phoneNumber, phoneNumber, phoneNumber, "31/10/2003");
+                    AndroidUtil.showToast(getApplicationContext(), "Verified OTP successful! Redirecting...");
                 } else {
-                    AndroidUtil.showToast(getApplicationContext(), "OTP verification failed");
+                    AndroidUtil.showToast(getApplicationContext(), "OTP wrong! Please try again");
                 }
             }
         });
+    }
 
+    private String configPhoneToMail(String phoneNumber) {
+        String newPhoneMail = phoneNumber.substring(1) + "@gmail.com";
+        return newPhoneMail;
+    }
+
+    private void performRegistration(String email, String username, String password,
+                                     String confirmPassword, String dateOfBirth) {
+        RegisterRequest request = new RegisterRequest(
+                email,
+                username,
+                password,
+                confirmPassword,
+                dateOfBirth
+        );
+
+        // Log the full request for debugging
+        Log.d("RegisterActivity", "Making register API call...");
+
+        networkManager.getApiService().register(request).enqueue(new ApiCallback<RegisterResponseData>() {
+            @Override
+            public void onSuccess(RegisterResponseData result, String message) {
+                Intent intent = new Intent(PhoneLoginOtpActivity.this, WelcomeUserActivity.class);
+                intent.putExtra("username", phoneNumber);
+                intent.putExtra("isRegister", false);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(int statusCode, String message) {
+                runOnUiThread(() -> {
+                    Log.e("RegisterActivity", "Register error - Status: " + statusCode + ", Message: " + message);
+
+                    // Handle specific error cases
+                    if (message.toLowerCase().contains("email is already exists") ||
+                            message.toLowerCase().contains("email already exists") ||
+                            message.toLowerCase().contains("email")) {
+                        Intent intent = new Intent(PhoneLoginOtpActivity.this, WelcomeUserActivity.class);
+                        intent.putExtra("username", phoneNumber);
+                        intent.putExtra("isRegister", true);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(PhoneLoginOtpActivity.this, "Registration failed: " + message, Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                runOnUiThread(() -> {
+                    Log.e("RegisterActivity", "Network error: " + message);
+                    Toast.makeText(PhoneLoginOtpActivity.this, "Network error: " + message, Toast.LENGTH_LONG).show();
+                });
+            }
+        });
     }
 
     void setInProgress(boolean inProgress) {
@@ -199,7 +265,8 @@ public class PhoneLoginOtpActivity extends AppCompatActivity {
                 resendOtpText.setText("Resend OTP");
                 resendOtpText.setClickable(true);
                 resendOtpText.setOnClickListener(v -> {
-                    Log.d("checkResend", "Đã gửi otp lại rồi nhé");
+                    sendOtp(configPhoneNumber(phoneNumber), true);
+                    startOtpCountdown(resendOtpText);
                 });
             }
         }.start();
