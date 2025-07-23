@@ -46,11 +46,11 @@ public class TimeUtils {
                 SimpleDateFormat sdf = new SimpleDateFormat("MMM dd", Locale.getDefault());
 
                 // Check if it's this year
-                Calendar now = Calendar.getInstance();
+                Calendar nowCal = Calendar.getInstance();
                 Calendar then = Calendar.getInstance();
                 then.setTime(date);
 
-                if (now.get(Calendar.YEAR) != then.get(Calendar.YEAR)) {
+                if (nowCal.get(Calendar.YEAR) != then.get(Calendar.YEAR)) {
                     sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
                 }
 
@@ -88,11 +88,11 @@ public class TimeUtils {
                 return dayFormat.format(date);
             } else {
                 // Older - show date
-                Calendar now = Calendar.getInstance();
+                Calendar nowCal = Calendar.getInstance();
                 Calendar then = Calendar.getInstance();
                 then.setTime(date);
 
-                if (now.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
+                if (nowCal.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
                     // Same year
                     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
                     return dateFormat.format(date);
@@ -133,11 +133,11 @@ public class TimeUtils {
                 return dayFormat.format(date);
             } else {
                 // Older - show date
-                Calendar now = Calendar.getInstance();
+                Calendar nowCal = Calendar.getInstance();
                 Calendar then = Calendar.getInstance();
                 then.setTime(date);
 
-                if (now.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
+                if (nowCal.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
                     // Same year
                     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", Locale.getDefault());
                     return dateFormat.format(date);
@@ -169,11 +169,11 @@ public class TimeUtils {
             } else if (diff < 2 * DAY_MILLIS) {
                 return "Yesterday";
             } else {
-                Calendar now = Calendar.getInstance();
+                Calendar nowCal = Calendar.getInstance();
                 Calendar then = Calendar.getInstance();
                 then.setTime(date);
 
-                if (now.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
+                if (nowCal.get(Calendar.YEAR) == then.get(Calendar.YEAR)) {
                     // Same year
                     SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM dd", Locale.getDefault());
                     return dateFormat.format(date);

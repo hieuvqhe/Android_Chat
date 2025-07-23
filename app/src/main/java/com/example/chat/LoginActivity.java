@@ -2,247 +2,332 @@ package com.example.chat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.example.chat.models.*;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
+import retrofit2.Call;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String TAG = "LoginActivity";
 
     private TextInputEditText editTextEmail, editTextPassword;
-    private TextInputLayout emailInputLayout, passwordInputLayout;
-    private MaterialButton buttonLogin;
-    private TextView textViewRegisterLink, textViewForgotPassword;
-    private MaterialCardView loginCard;
-
+    private MaterialButton buttonLogin, buttonRegisterLink, buttonForgotPassword;
     private NetworkManager networkManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        
+        try {
+            Log.d(TAG, "Starting onCreate");
+            setContentView(R.layout.activity_login);
+            Log.d(TAG, "Layout set successfully");
+            
+            initViews();
+            Log.d(TAG, "Views initialized successfully");
+            
+            setupClickListeners();
+            Log.d(TAG, "Click listeners setup successfully");
 
-        initViews();
-        setupAnimations();
-        setupClickListeners();
+            // Initialize NetworkManager
+            try {
+                networkManager = NetworkManager.getInstance(this);
+                Log.d(TAG, "NetworkManager initialized successfully");
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to initialize NetworkManager", e);
+                Toast.makeText(this, "Network initialization failed", Toast.LENGTH_SHORT).show();
+            }
 
-        networkManager = NetworkManager.getInstance(this);
-
-        // Pre-fill email if passed from registration or verification
-        String email = getIntent().getStringExtra("email");
-        if (email != null) {
-            editTextEmail.setText(email);
-        }
-
-        // Show success message if coming from successful registration
-        boolean verified = getIntent().getBooleanExtra("verified", false);
-        if (verified) {
-            Toast.makeText(this, "Email verified successfully! You can now login.",
-                    Toast.LENGTH_LONG).show();
-        }
-
-        // Check if user is already logged in
-        if (networkManager.isLoggedIn()) {
-            navigateToMain();
+            Log.d(TAG, "onCreate completed successfully");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Critical error in onCreate", e);
+            Toast.makeText(this, "App initialization failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
         }
     }
 
     private void initViews() {
-        editTextEmail = findViewById(R.id.editTextEmail);
-        editTextPassword = findViewById(R.id.editTextPassword);
-        emailInputLayout = findViewById(R.id.emailInputLayout);
-        passwordInputLayout = findViewById(R.id.passwordInputLayout);
-        buttonLogin = findViewById(R.id.buttonLogin);
-        textViewRegisterLink = findViewById(R.id.textViewRegisterLink);
-        textViewForgotPassword = findViewById(R.id.textViewForgotPassword);
-        loginCard = findViewById(R.id.loginCard);
-    }
-
-    private void setupAnimations() {
-        // Slide up animation for the card
-        Animation slideUp = AnimationUtils.loadAnimation(this, R.anim.slide_up);
-        loginCard.startAnimation(slideUp);
-
-        // Fade in animation for elements
-        Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-        buttonLogin.startAnimation(fadeIn);
+        try {
+            Log.d(TAG, "Initializing views...");
+            
+            editTextEmail = findViewById(R.id.editTextEmail);
+            Log.d(TAG, "editTextEmail: " + (editTextEmail != null ? "found" : "NULL"));
+            
+            editTextPassword = findViewById(R.id.editTextPassword);
+            Log.d(TAG, "editTextPassword: " + (editTextPassword != null ? "found" : "NULL"));
+            
+            buttonLogin = findViewById(R.id.buttonLogin);
+            Log.d(TAG, "buttonLogin: " + (buttonLogin != null ? "found" : "NULL"));
+            
+            buttonRegisterLink = findViewById(R.id.buttonRegisterLink);
+            Log.d(TAG, "buttonRegisterLink: " + (buttonRegisterLink != null ? "found" : "NULL"));
+            
+            buttonForgotPassword = findViewById(R.id.buttonForgotPassword);
+            Log.d(TAG, "buttonForgotPassword: " + (buttonForgotPassword != null ? "found" : "NULL"));
+            
+            // Check for critical views
+            if (editTextEmail == null) {
+                throw new RuntimeException("editTextEmail not found in layout");
+            }
+            if (editTextPassword == null) {
+                throw new RuntimeException("editTextPassword not found in layout");
+            }
+            if (buttonLogin == null) {
+                throw new RuntimeException("buttonLogin not found in layout");
+            }
+            
+            Log.d(TAG, "All critical views found successfully");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to initialize views", e);
+            throw e;
+        }
     }
 
     private void setupClickListeners() {
-        // Login button click listener
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleLogin();
+        try {
+            Log.d(TAG, "Setting up click listeners...");
+            
+            if (buttonLogin != null) {
+                buttonLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "Login button clicked");
+                        handleLogin();
+                    }
+                });
+                Log.d(TAG, "Login button listener set");
             }
-        });
 
-        // Register link click listener
-        textViewRegisterLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Animation for click
-                Animation scaleAnimation = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.scale_click);
-                v.startAnimation(scaleAnimation);
-
-                // Navigate to register
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            if (buttonRegisterLink != null) {
+                buttonRegisterLink.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "Register link clicked");
+                        try {
+                            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error navigating to register", e);
+                            Toast.makeText(LoginActivity.this, "Navigation error", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                Log.d(TAG, "Register link listener set");
             }
-        });
 
-        // Forgot password click listener
-        textViewForgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+            if (buttonForgotPassword != null) {
+                buttonForgotPassword.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "Forgot password clicked");
+                        try {
+                            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error navigating to forgot password", e);
+                            Toast.makeText(LoginActivity.this, "Navigation error", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                Log.d(TAG, "Forgot password listener set");
             }
-        });
+            
+            Log.d(TAG, "All click listeners setup successfully");
+            
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to setup click listeners", e);
+            throw e;
+        }
     }
 
     private void handleLogin() {
-        String email = editTextEmail.getText().toString().trim();
-        String password = editTextPassword.getText().toString().trim();
+        try {
+            Log.d(TAG, "Handling login...");
 
-        // Reset error states
-        emailInputLayout.setError(null);
-        passwordInputLayout.setError(null);
+            String email = editTextEmail.getText().toString().trim();
+            String password = editTextPassword.getText().toString().trim();
 
-        // Validate input
-        if (email.isEmpty()) {
-            emailInputLayout.setError("Email is required");
-            emailInputLayout.requestFocus();
-            return;
-        }
+            Log.d(TAG, "Email: " + email);
+            Log.d(TAG, "Password length: " + password.length());
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailInputLayout.setError("Please enter a valid email");
-            emailInputLayout.requestFocus();
-            return;
-        }
-
-        if (password.isEmpty()) {
-            passwordInputLayout.setError("Password is required");
-            passwordInputLayout.requestFocus();
-            return;
-        }
-
-        if (password.length() < 6) {
-            passwordInputLayout.setError("Password must be at least 6 characters");
-            passwordInputLayout.requestFocus();
-            return;
-        }
-
-        // Disable button and show loading
-        buttonLogin.setEnabled(false);
-        buttonLogin.setText("LOGGING IN...");
-
-        // Call login API
-        performLogin(email, password);
-    }
-
-    private void performLogin(String email, String password) {
-        LoginRequest request = new LoginRequest(email, password);
-
-        networkManager.getApiService().login(request).enqueue(new ApiCallback<LoginResponseData>() {
-            @Override
-            public void onSuccess(LoginResponseData result, String message) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Reset button state
-                        buttonLogin.setEnabled(true);
-                        buttonLogin.setText("LOGIN");
-
-                        // Save tokens
-                        networkManager.saveTokens(result.getAccessToken(), result.getRefreshToken());
-
-                        // Show success message
-                        Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-
-                        // Navigate to main activity
-                        navigateToMain();
-                    }
-                });
+            // Validate input
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show();
+                return;
             }
 
-            @Override
-            public void onError(int statusCode, String message) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Reset button state
-                        buttonLogin.setEnabled(true);
-                        buttonLogin.setText("LOGIN");
+            if (password.isEmpty()) {
+                Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                        // Show error message
-                        if (statusCode == 404) {
-                            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-                        } else if (statusCode == 403) {
-                            // User not verified
-                            Toast.makeText(LoginActivity.this, "Please verify your email first", Toast.LENGTH_LONG).show();
+            if (networkManager == null) {
+                Toast.makeText(this, "Network not available", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                            // Navigate to email verification
-                            Intent intent = new Intent(LoginActivity.this, EmailVerificationActivity.class);
-                            intent.putExtra("email", email);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        } else {
-                            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+            // Disable login button to prevent multiple requests
+            if (buttonLogin != null) {
+                buttonLogin.setEnabled(false);
+                buttonLogin.setText("Logging in...");
+            }
+
+            // Create login request
+            LoginRequest loginRequest = new LoginRequest(email, password);
+
+            // Make API call
+            Call<ApiResponse<LoginResponseData>> call = networkManager.getApiService().login(loginRequest);
+            call.enqueue(new ApiCallback<LoginResponseData>() {
+                @Override
+                public void onSuccess(LoginResponseData data, String message) {
+                    Log.d(TAG, "Login successful: " + message);
+
+                    runOnUiThread(() -> {
+                        try {
+                            // Save tokens
+                            if (data != null && data.getAccessToken() != null && data.getRefreshToken() != null) {
+                                networkManager.saveTokens(data.getAccessToken(), data.getRefreshToken());
+
+                                // Get user profile to save user ID
+                                getUserProfile();
+                            } else {
+                                onError(400, "Invalid login response");
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing login response", e);
+                            onError(500, "Login processing failed");
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(int statusCode, String error) {
+                    Log.e(TAG, "Login failed: " + error + " (Status: " + statusCode + ")");
+
+                    runOnUiThread(() -> {
+                        // Re-enable login button
+                        if (buttonLogin != null) {
+                            buttonLogin.setEnabled(true);
+                            buttonLogin.setText("Login");
                         }
 
-                        // Shake animation for error
-                        Animation shake = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.shake);
-                        loginCard.startAnimation(shake);
-                    }
-                });
+                        Toast.makeText(LoginActivity.this, "Login failed: " + error, Toast.LENGTH_LONG).show();
+                    });
+                }
+
+                @Override
+                public void onNetworkError(String error) {
+                    Log.e(TAG, "Login network error: " + error);
+
+                    runOnUiThread(() -> {
+                        // Re-enable login button
+                        if (buttonLogin != null) {
+                            buttonLogin.setEnabled(true);
+                            buttonLogin.setText("Login");
+                        }
+
+                        Toast.makeText(LoginActivity.this, "Network error: " + error, Toast.LENGTH_LONG).show();
+                    });
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error in handleLogin", e);
+
+            // Re-enable login button
+            if (buttonLogin != null) {
+                buttonLogin.setEnabled(true);
+                buttonLogin.setText("Login");
             }
 
-            @Override
-            public void onNetworkError(String message) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Reset button state
-                        buttonLogin.setEnabled(true);
-                        buttonLogin.setText("LOGIN");
+            Toast.makeText(this, "Login error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
 
-                        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-
-                        // Shake animation for error
-                        Animation shake = AnimationUtils.loadAnimation(LoginActivity.this, R.anim.shake);
-                        loginCard.startAnimation(shake);
-                    }
-                });
+    private void getUserProfile() {
+        try {
+            String authHeader = networkManager.getAuthorizationHeader();
+            if (authHeader == null) {
+                Log.e(TAG, "No authorization header available");
+                navigateToMainActivity();
+                return;
             }
-        });
+
+            Call<ApiResponse<User>> call = networkManager.getApiService().getMyProfile(authHeader);
+            call.enqueue(new ApiCallback<User>() {
+                @Override
+                public void onSuccess(User user, String message) {
+                    Log.d(TAG, "User profile retrieved successfully");
+
+                    runOnUiThread(() -> {
+                        try {
+                            // Save user ID
+                            if (user != null && user.getId() != null) {
+                                networkManager.saveUserId(user.getId());
+                                Log.d(TAG, "User ID saved: " + user.getId());
+                            }
+
+                            Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                            navigateToMainActivity();
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing user profile", e);
+                            // Still navigate to main even if user profile fails
+                            navigateToMainActivity();
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(int statusCode, String error) {
+                    Log.e(TAG, "Failed to get user profile: " + error);
+
+                    runOnUiThread(() -> {
+                        // Still navigate to main even if user profile fails
+                        Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                        navigateToMainActivity();
+                    });
+                }
+
+                @Override
+                public void onNetworkError(String error) {
+                    Log.e(TAG, "Network error getting user profile: " + error);
+
+                    runOnUiThread(() -> {
+                        // Still navigate to main even if user profile fails
+                        Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                        navigateToMainActivity();
+                    });
+                }
+            });
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting user profile", e);
+            // Still navigate to main even if user profile fails
+            navigateToMainActivity();
+        }
     }
 
-    private void navigateToMain() {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    private void navigateToMainActivity() {
+        try {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        } catch (Exception e) {
+            Log.e(TAG, "Error navigating to MainActivity", e);
+            Toast.makeText(this, "Navigation error", Toast.LENGTH_SHORT).show();
+        }
     }
 }

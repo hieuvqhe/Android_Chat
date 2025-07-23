@@ -251,7 +251,7 @@ public interface ApiService {
 
     // Get messages
     @GET("api/v1/messages")
-    Call<ApiResponse<List<Message>>> getMessages(
+    Call<ApiResponse<MessagesResponse>> getMessages(
             @Header("Authorization") String accessToken,
             @Query("conversation_id") String conversationId,
             @Query("page") int page,
@@ -358,11 +358,11 @@ public interface ApiService {
     );
 
     // Remove member from group
-    @DELETE("api/v1/groups/{group_id}/remove-member")
+    @DELETE("api/v1/groups/{group_id}/remove-member/{member_id}")
     Call<ApiResponse<Object>> removeGroupMember(
             @Header("Authorization") String accessToken,
             @Path("group_id") String groupId,
-            @Body RemoveGroupMemberRequest request
+            @Path("member_id") String memberId
     );
 
     // Leave group

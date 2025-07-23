@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,6 +73,9 @@ public class ChatActivity extends AppCompatActivity {
     private int currentPage = 1;
     private static final int PAGE_SIZE = 30;
 
+    // Reply context
+    private Message currentReplyToMessage = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,10 +119,16 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void setupToolbar() {
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false); // We'll use custom title
+        try {
+            if (toolbar != null) {
+                setSupportActionBar(toolbar);
+                if (getSupportActionBar() != null) {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    getSupportActionBar().setDisplayShowTitleEnabled(false); // We'll use custom title
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting up toolbar", e);
         }
 
         // Set conversation name
@@ -157,7 +167,7 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onReplyClick(Message message) {
-                // TODO: Implement reply functionality
+                startReply(message);
             }
 
             @Override
@@ -362,13 +372,46 @@ public class ChatActivity extends AppCompatActivity {
         editTextMessage.setText("");
         buttonSend.setEnabled(false);
 
-        messageService.sendMessage(conversationId, content, new ApiCallback<Message>() {
+        // Check if this is a reply
+        if (currentReplyToMessage != null) {
+            messageService.replyToMessage(conversationId, content, currentReplyToMessage.getId(), new ApiCallback<Message>() {
+                @Override
+                public void onSuccess(Message result, String message) {
+                    runOnUiThread(() -> {
+                        messagesAdapter.addMessage(result);
+                        recyclerViewMessages.scrollToPosition(messagesAdapter.getItemCount() - 1);
+                        currentReplyToMessage = null; // Clear reply context
+                    });
+                }
+
+                @Override
+                public void onError(int statusCode, String error) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(ChatActivity.this, "Failed to send reply: " + error, Toast.LENGTH_SHORT).show();
+                        editTextMessage.setText(content);
+                        editTextMessage.setSelection(content.length());
+                        currentReplyToMessage = null;
+                    });
+                }
+
+                @Override
+                public void onNetworkError(String error) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(ChatActivity.this, "Network error. Reply not sent.", Toast.LENGTH_SHORT).show();
+                        editTextMessage.setText(content);
+                        editTextMessage.setSelection(content.length());
+                        currentReplyToMessage = null;
+                    });
+                }
+            });
+        } else {
+            messageService.sendMessage(conversationId, content, new ApiCallback<Message>() {
             @Override
             public void onSuccess(Message result, String message) {
                 runOnUiThread(() -> {
                     // Add message to list
                     messagesAdapter.addMessage(result);
-                    recyclerViewMessages.scrollToPosition(messagesList.size() - 1);
+                    recyclerViewMessages.scrollToPosition(messagesAdapter.getItemCount() - 1);
                     updateEmptyState();
 
                     Log.d(TAG, "Message sent successfully");
@@ -394,7 +437,8 @@ public class ChatActivity extends AppCompatActivity {
                     editTextMessage.setSelection(content.length());
                 });
             }
-        });
+            });
+        }
     }
 
     private void markMessagesAsRead() {
@@ -441,8 +485,7 @@ public class ChatActivity extends AppCompatActivity {
                     confirmDeleteMessage(message);
                     break;
                 case "Reply":
-                    // TODO: Implement reply
-                    Toast.makeText(this, "Reply feature coming soon", Toast.LENGTH_SHORT).show();
+                    startReply(message);
                     break;
                 case "Copy":
                     copyMessage(message);
@@ -454,8 +497,65 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void editMessage(Message message) {
-        // TODO: Implement edit message dialog
-        Toast.makeText(this, "Edit feature coming soon", Toast.LENGTH_SHORT).show();
+        // Create edit dialog
+        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("Edit Message");
+
+        // Create EditText for editing
+        final com.google.android.material.textfield.TextInputEditText editText =
+            new com.google.android.material.textfield.TextInputEditText(this);
+        editText.setText(message.getContent());
+        editText.setSelection(message.getContent().length());
+        editText.setHint("Enter your message...");
+
+        // Add padding
+        int padding = (int) (16 * getResources().getDisplayMetrics().density);
+        editText.setPadding(padding, padding, padding, padding);
+
+        builder.setView(editText);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newContent = editText.getText().toString().trim();
+            if (!newContent.isEmpty() && !newContent.equals(message.getContent())) {
+                updateMessage(message, newContent);
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+
+        androidx.appcompat.app.AlertDialog dialog = builder.create();
+        dialog.show();
+
+        // Focus and show keyboard
+        editText.requestFocus();
+        dialog.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    private void updateMessage(Message message, String newContent) {
+        messageService.editMessage(message.getId(), newContent, new ApiCallback<Message>() {
+            @Override
+            public void onSuccess(Message result, String response) {
+                runOnUiThread(() -> {
+                    // Update message in adapter
+                    messagesAdapter.updateMessage(result);
+                    Toast.makeText(ChatActivity.this, "Message updated", Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onError(int statusCode, String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(ChatActivity.this, "Failed to update message: " + error, Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onNetworkError(String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(ChatActivity.this, "Network error: " + error, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     private void confirmDeleteMessage(Message message) {
@@ -501,6 +601,25 @@ public class ChatActivity extends AppCompatActivity {
         Toast.makeText(this, "Message copied", Toast.LENGTH_SHORT).show();
     }
 
+    private void startReply(Message message) {
+        // Set focus to input and add reply context
+        editTextMessage.requestFocus();
+
+        // Show reply preview (you can enhance this with a reply bar UI)
+        String replyText = "Replying to: " + message.getContent().substring(0, Math.min(50, message.getContent().length()));
+        if (message.getContent().length() > 50) {
+            replyText += "...";
+        }
+
+        Toast.makeText(this, replyText, Toast.LENGTH_LONG).show();
+
+        // Store reply context for when user sends message
+        currentReplyToMessage = message;
+
+        // You can add a reply bar UI here to show what message is being replied to
+        // For now, we'll just modify the send behavior
+    }
+
     private void openChatInfo() {
         if (conversationType == 1) {
             // Open group info
@@ -511,7 +630,7 @@ public class ChatActivity extends AppCompatActivity {
             // Open user profile
             if (otherUserId != null) {
                 Intent intent = new Intent(this, UserProfileActivity.class);
-                intent.putExtra(UserProfileActivity.EXTRA_USER_ID, otherUserId);
+                intent.putExtra(UserProfileActivity.EXTRA_USERNAME, otherUserId);
                 startActivity(intent);
             }
         }

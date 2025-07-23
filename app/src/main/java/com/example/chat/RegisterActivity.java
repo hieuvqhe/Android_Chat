@@ -33,8 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
             editTextPassword, editTextConfirmPassword, editTextDateOfBirth;
     private TextInputLayout usernameInputLayout, emailInputLayout,
             passwordInputLayout, confirmPasswordInputLayout, dateOfBirthInputLayout;
-    private MaterialButton buttonRegister;
-    private TextView textViewLoginLink, textViewTerms;
+    private MaterialButton buttonRegister, buttonLoginLink, buttonTermsConditions;
     private MaterialCheckBox checkBoxTerms;
     private MaterialCardView registerCard;
     private MaterialToolbar toolbar;
@@ -44,14 +43,21 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
 
-        initViews();
-        setupToolbar();
-        setupAnimations();
-        setupClickListeners();
+        try {
+            setContentView(R.layout.activity_register);
 
-        networkManager = NetworkManager.getInstance(this);
+            initViews();
+            setupToolbar();
+            setupAnimations();
+            setupClickListeners();
+
+            networkManager = NetworkManager.getInstance(this);
+        } catch (Exception e) {
+            android.util.Log.e("RegisterActivity", "Critical error in onCreate", e);
+            Toast.makeText(this, "App initialization failed", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void initViews() {
@@ -68,8 +74,8 @@ public class RegisterActivity extends AppCompatActivity {
         dateOfBirthInputLayout = findViewById(R.id.dateOfBirthInputLayout);
 
         buttonRegister = findViewById(R.id.buttonRegister);
-        textViewLoginLink = findViewById(R.id.textViewLoginLink);
-        textViewTerms = findViewById(R.id.textViewTerms);
+        buttonLoginLink = findViewById(R.id.buttonLoginLink);
+        buttonTermsConditions = findViewById(R.id.buttonTermsConditions);
         checkBoxTerms = findViewById(R.id.checkBoxTerms);
         registerCard = findViewById(R.id.registerCard);
         toolbar = findViewById(R.id.toolbarRegister);
@@ -94,26 +100,46 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        buttonRegister.setOnClickListener(v -> handleRegister());
+        try {
+            if (buttonRegister != null) {
+                buttonRegister.setOnClickListener(v -> handleRegister());
+            }
 
-        textViewLoginLink.setOnClickListener(v -> {
-            Animation scaleAnimation = AnimationUtils.loadAnimation(RegisterActivity.this, R.anim.scale_click);
-            v.startAnimation(scaleAnimation);
+            if (buttonLoginLink != null) {
+                buttonLoginLink.setOnClickListener(v -> {
+                    try {
+                        Animation scaleAnimation = AnimationUtils.loadAnimation(RegisterActivity.this, R.anim.scale_click);
+                        v.startAnimation(scaleAnimation);
 
-            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-            finish();
-        });
+                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                        finish();
+                    } catch (Exception e) {
+                        android.util.Log.e("RegisterActivity", "Error navigating to login", e);
+                    }
+                });
+            }
 
-        textViewTerms.setOnClickListener(v -> {
-            Animation scaleAnimation = AnimationUtils.loadAnimation(RegisterActivity.this, R.anim.scale_click);
-            v.startAnimation(scaleAnimation);
-            showTermsAndConditions();
-        });
+            if (buttonTermsConditions != null) {
+                buttonTermsConditions.setOnClickListener(v -> {
+                    try {
+                        Animation scaleAnimation = AnimationUtils.loadAnimation(RegisterActivity.this, R.anim.scale_click);
+                        v.startAnimation(scaleAnimation);
+                        showTermsAndConditions();
+                    } catch (Exception e) {
+                        android.util.Log.e("RegisterActivity", "Error showing terms", e);
+                    }
+                });
+            }
 
-        editTextDateOfBirth.setOnClickListener(v -> showDatePickerDialog());
+            if (editTextDateOfBirth != null) {
+                editTextDateOfBirth.setOnClickListener(v -> showDatePickerDialog());
+            }
+        } catch (Exception e) {
+            android.util.Log.e("RegisterActivity", "Failed to setup click listeners", e);
+        }
     }
 
     private void showDatePickerDialog() {

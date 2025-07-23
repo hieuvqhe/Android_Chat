@@ -66,25 +66,23 @@ public class MessageService {
         }
 
         Log.d(TAG, "Getting messages - Conversation: " + conversationId + ", Page: " + page + ", Limit: " + limit);
-        Call<ApiResponse<List<Message>>> call = apiService.getMessages(authHeader, conversationId, page, limit, beforeMessageId);
+        Call<ApiResponse<MessagesResponse>> call = apiService.getMessages(authHeader, conversationId, page, limit, beforeMessageId);
 
-        call.enqueue(new retrofit2.Callback<ApiResponse<List<Message>>>() {
+        call.enqueue(new retrofit2.Callback<ApiResponse<MessagesResponse>>() {
             @Override
-            public void onResponse(retrofit2.Call<ApiResponse<List<Message>>> call, retrofit2.Response<ApiResponse<List<Message>>> response) {
+            public void onResponse(retrofit2.Call<ApiResponse<MessagesResponse>> call, retrofit2.Response<ApiResponse<MessagesResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<List<Message>> apiResponse = response.body();
-                    List<Message> messages = apiResponse.getResult();
+                    ApiResponse<MessagesResponse> apiResponse = response.body();
+                    MessagesResponse messagesResponse = apiResponse.getResult();
+                    List<Message> messages = messagesResponse != null ? messagesResponse.getMessages() : null;
 
                     Log.d(TAG, "getMessages SUCCESS: " + apiResponse.getMessage());
                     Log.d(TAG, "Messages count: " + (messages != null ? messages.size() : "NULL"));
 
                     // Calculate if there are more messages
                     boolean hasMore = false;
-                    if (apiResponse.getTotalPages() > 0) {
-                        hasMore = apiResponse.getPage() < apiResponse.getTotalPages();
-                    } else {
-                        // If no pagination info, assume no more if we got less than requested
-                        hasMore = messages != null && messages.size() >= limit;
+                    if (messagesResponse != null) {
+                        hasMore = messagesResponse.isHasMore();
                     }
 
                     callback.onSuccess(messages, hasMore);
@@ -95,7 +93,7 @@ public class MessageService {
             }
 
             @Override
-            public void onFailure(retrofit2.Call<ApiResponse<List<Message>>> call, Throwable t) {
+            public void onFailure(retrofit2.Call<ApiResponse<MessagesResponse>> call, Throwable t) {
                 Log.e(TAG, "getMessages NETWORK ERROR: " + t.getMessage());
                 callback.onNetworkError(t.getMessage());
             }

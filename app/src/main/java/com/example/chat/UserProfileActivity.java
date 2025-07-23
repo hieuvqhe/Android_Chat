@@ -27,7 +27,7 @@ public class UserProfileActivity extends AppCompatActivity {
     // Intent Extra Keys - Support both possible keys for compatibility
     public static final String EXTRA_USERNAME = "extra_username";
     public static final String EXTRA_USERNAME_ALT = "username";
-
+    public static final String EXTRA_USER_ID = "user_id";
     // Views
     private MaterialToolbar toolbar;
     private ImageView imageViewAvatar;

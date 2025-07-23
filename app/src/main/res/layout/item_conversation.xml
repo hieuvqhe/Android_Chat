@@ -5,132 +5,165 @@
     android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
-    app:strokeWidth="0dp">
+    app:strokeColor="@color/card_stroke_color"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Avatar -->
-        <ImageView
-            android:id="@+id/imageViewAvatar"
+        <!-- Avatar Container -->
+        <FrameLayout
+            android:id="@+id/avatarContainer"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:layout_marginEnd="12dp"
-            android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/default_avatar" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Online Status -->
-        <ImageView
-            android:id="@+id/imageViewOnlineStatus"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:src="@drawable/ic_online_dot"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/imageViewAvatar"
-            app:layout_constraintEnd_toEndOf="@id/imageViewAvatar"
-            tools:visibility="visible" />
+            <!-- Avatar -->
+            <ImageView
+                android:id="@+id/imageViewAvatar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Contact avatar"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_avatar" />
 
-        <!-- Conversation Name -->
-        <TextView
-            android:id="@+id/textViewName"
+            <!-- Online Status Indicator -->
+            <ImageView
+                android:id="@+id/imageViewOnlineStatus"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="bottom|end"
+                android:contentDescription="Online status"
+                android:src="@drawable/ic_online_dot"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </FrameLayout>
+
+        <!-- Name Container -->
+        <LinearLayout
+            android:id="@+id/nameContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            app:layout_constraintEnd_toStartOf="@id/imageViewPinned"
-            app:layout_constraintStart_toEndOf="@id/imageViewAvatar"
-            app:layout_constraintTop_toTopOf="@id/imageViewAvatar"
-            tools:text="John Doe" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            app:layout_constraintEnd_toStartOf="@id/statusContainer"
+            app:layout_constraintStart_toEndOf="@id/avatarContainer"
+            app:layout_constraintTop_toTopOf="@id/avatarContainer">
+
+            <!-- Name -->
+            <TextView
+                android:id="@+id/textViewName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="John Doe" />
+
+            <!-- Muted Icon -->
+            <ImageView
+                android:id="@+id/imageViewMuted"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="Muted conversation"
+                android:src="@drawable/ic_volume_off"
+                android:visibility="gone"
+                app:tint="?android:attr/textColorSecondary"
+                tools:visibility="visible" />
+
+            <!-- Pinned Icon -->
+            <ImageView
+                android:id="@+id/imageViewPinned"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:contentDescription="Pinned conversation"
+                android:src="@drawable/ic_push_pin"
+                android:visibility="gone"
+                app:tint="?attr/colorPrimary"
+                tools:visibility="visible" />
+
+        </LinearLayout>
 
         <!-- Last Message -->
         <TextView
             android:id="@+id/textViewLastMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textColor="?android:attr/textColorSecondary"
             android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@id/textViewTime"
-            app:layout_constraintStart_toEndOf="@id/imageViewAvatar"
-            app:layout_constraintTop_toBottomOf="@id/textViewName"
-            tools:text="Hey, how are you doing today?" />
+            app:layout_constraintEnd_toStartOf="@id/statusContainer"
+            app:layout_constraintStart_toEndOf="@id/avatarContainer"
+            app:layout_constraintTop_toBottomOf="@id/nameContainer"
+            tools:text="Hey, how are you doing today? I hope everything is going well with your work." />
 
-        <!-- Time -->
-        <TextView
-            android:id="@+id/textViewTime"
+        <!-- Status Container (Time, Unread) -->
+        <LinearLayout
+            android:id="@+id/statusContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textViewName"
-            tools:text="2:30 PM" />
-
-        <!-- Unread Count -->
-        <TextView
-            android:id="@+id/textViewUnreadCount"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/circle_primary_background"
             android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:visibility="gone"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewTime"
-            tools:text="3"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toTopOf="@id/avatarContainer">
+
+            <!-- Time -->
+            <TextView
+                android:id="@+id/textViewTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="?android:attr/textColorSecondary"
+                android:textSize="12sp"
+                tools:text="2:30 PM" />
+
+            <!-- Unread Count Badge -->
+            <TextView
+                android:id="@+id/textViewUnreadCount"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/circle_primary_background"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:text="3"
+                tools:visibility="visible" />
+
+        </LinearLayout>
 
         <!-- Unread Indicator -->
         <View
             android:id="@+id/viewUnreadIndicator"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:background="@drawable/circle_primary_background"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="?attr/colorPrimary"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewTime" />
-
-        <!-- Muted Icon -->
-        <ImageView
-            android:id="@+id/imageViewMuted"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/ic_volume_off"
-            android:tint="?attr/colorOnSurfaceVariant"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/textViewLastMessage"
-            app:layout_constraintEnd_toStartOf="@id/imageViewPinned"
-            tools:visibility="visible" />
-
-        <!-- Pinned Icon -->
-        <ImageView
-            android:id="@+id/imageViewPinned"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:src="@drawable/ic_push_pin"
-            android:tint="?attr/colorPrimary"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/textViewName"
+            app:layout_constraintBottom_toBottomOf="@id/avatarContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/avatarContainer"
             tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

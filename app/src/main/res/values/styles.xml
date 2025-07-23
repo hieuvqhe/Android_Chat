@@ -1,4 +1,8 @@
 <resources>
+       <style name="CircleImageView" parent="Widget.MaterialComponents.ShapeableImageView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 
     <!-- Custom Button Styles -->
     <style name="AppButtonStyle" parent="Widget.MaterialComponents.Button">
@@ -35,10 +39,6 @@
         <item name="boxCornerRadiusBottomEnd">12dp</item>
     </style>
 
-    <!-- Circle Image View Style -->
-    <style name="CircleImageView">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">50%</item>
-    </style>
+
 
 </resources>

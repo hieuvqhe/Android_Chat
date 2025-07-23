@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"    
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -473,6 +473,22 @@
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
+
+            <!-- Save Button (for EditProfileActivity.java) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonSave"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_large"
+                android:layout_marginBottom="@dimen/spacing_large"
+                android:text="@string/save_changes"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:icon="@drawable/ic_save_24"
+                app:iconTint="@color/md_theme_onPrimary"
+                app:backgroundTint="@color/md_theme_primary"
+                android:textColor="@color/md_theme_onPrimary"
+                app:cornerRadius="@dimen/button_corner_radius" />
 
             <!-- Bottom spacing for FAB -->
             <View

@@ -159,7 +159,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.GroupViewH
         private void showMoreOptions(Group group) {
             try {
                 androidx.appcompat.widget.PopupMenu popup = new androidx.appcompat.widget.PopupMenu(context, buttonMore);
-                popup.getMenuInflater().inflate(R.menu.group_options_menu, popup.getMenu());
+                popup.getMenuInflater().inflate(R.menu.chat_menu, popup.getMenu());
 
                 // Hide leave option for owners
                 if (group.isOwner()) {

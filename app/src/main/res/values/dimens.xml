@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="icon_medium">32dp</dimen>
+    <dimen name="icon_circle_medium">40dp</dimen>
+    <dimen name="icon_circle_medium_radius">20dp</dimen>
+    <dimen name="button_elevation">4dp</dimen>
+    <dimen name="icon_circle_large">64dp</dimen>
+    <dimen name="icon_circle_radius">32dp</dimen>
+    <dimen name="icon_large">48dp</dimen>
+    <dimen name="line_spacing">12dp</dimen>
+    <dimen name="spacing_extra_large">32dp</dimen>
+    <dimen name="card_elevation_small">2dp</dimen>
+    <dimen name="card_corner_radius_large">24dp</dimen>
+    <dimen name="icon_small">24dp</dimen>
     <!-- Standard spacing -->
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing_medium">16dp</dimen>

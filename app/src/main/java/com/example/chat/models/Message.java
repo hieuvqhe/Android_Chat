@@ -18,7 +18,10 @@ public class Message {
     private String content;
 
     @SerializedName("message_type")
-    private int messageType; // 0 = text, 1 = image, 2 = video, 3 = file, 4 = audio
+    private String messageTypeString; // "text", "image", "video", "file", "audio"
+
+    // Computed field for backward compatibility
+    private transient int messageType;
 
     @SerializedName("medias")
     private List<Media> medias;
@@ -27,7 +30,10 @@ public class Message {
     private String replyTo; // Message ID being replied to
 
     @SerializedName("status")
-    private int status; // 0 = sent, 1 = delivered, 2 = read
+    private String statusString; // "sent", "delivered", "read"
+
+    // Computed field for backward compatibility
+    private transient int status;
 
     @SerializedName("edited")
     private boolean edited;
@@ -55,7 +61,7 @@ public class Message {
         this.senderId = senderId;
         this.content = content;
         this.messageType = messageType;
-        this.status = 0; // Sent
+        this.statusString = "sent"; // Default to sent
         this.edited = false;
         this.createdAt = new Date();
     }
@@ -94,11 +100,39 @@ public class Message {
     }
 
     public int getMessageType() {
+        // Convert string to int if needed
+        if (messageTypeString != null) {
+            switch (messageTypeString.toLowerCase()) {
+                case "text": return 0;
+                case "image": return 1;
+                case "video": return 2;
+                case "file": return 3;
+                case "audio": return 4;
+                default: return 0; // Default to text
+            }
+        }
         return messageType;
     }
 
     public void setMessageType(int messageType) {
         this.messageType = messageType;
+        // Also set string representation
+        switch (messageType) {
+            case 0: this.messageTypeString = "text"; break;
+            case 1: this.messageTypeString = "image"; break;
+            case 2: this.messageTypeString = "video"; break;
+            case 3: this.messageTypeString = "file"; break;
+            case 4: this.messageTypeString = "audio"; break;
+            default: this.messageTypeString = "text"; break;
+        }
+    }
+
+    public String getMessageTypeString() {
+        return messageTypeString;
+    }
+
+    public void setMessageTypeString(String messageTypeString) {
+        this.messageTypeString = messageTypeString;
     }
 
     public List<Media> getMedias() {
@@ -118,11 +152,35 @@ public class Message {
     }
 
     public int getStatus() {
+        // Convert string to int if needed
+        if (statusString != null) {
+            switch (statusString.toLowerCase()) {
+                case "sent": return 0;
+                case "delivered": return 1;
+                case "read": return 2;
+                default: return 0; // Default to sent
+            }
+        }
         return status;
     }
 
     public void setStatus(int status) {
         this.status = status;
+        // Also set string representation
+        switch (status) {
+            case 0: this.statusString = "sent"; break;
+            case 1: this.statusString = "delivered"; break;
+            case 2: this.statusString = "read"; break;
+            default: this.statusString = "sent"; break;
+        }
+    }
+
+    public String getStatusString() {
+        return statusString;
+    }
+
+    public void setStatusString(String statusString) {
+        this.statusString = statusString;
     }
 
     public boolean isEdited() {

@@ -1,5 +1,6 @@
 package com.example.chat.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,9 +18,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.chat.ChatActivity;
 import com.example.chat.FriendsActivity;
 import com.example.chat.R;
 import com.example.chat.adapters.FriendsListAdapter;
+import com.example.chat.models.Conversation;
+import com.example.chat.models.CreatePrivateConversationRequest;
 import com.example.chat.models.Friend;
 import com.example.chat.models.UserInfo;
 import com.example.chat.network.ApiCallback;
@@ -165,11 +169,110 @@ public class FriendsListFragment extends Fragment {
      * Bắt đầu chat với friend
      */
     private void startChatWithFriend(Friend friend) {
-        UserInfo friendUser = FriendUtils.getFriendUser(friend);
-        String friendName = friendUser != null ? FriendUtils.getUserDisplayName(friendUser) : "user";
+        try {
+            UserInfo friendUser = FriendUtils.getFriendUser(friend);
+            if (friendUser == null || friendUser.getId() == null) {
+                Toast.makeText(getContext(), "Unable to start chat: Invalid friend data", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        // TODO: Navigate to chat activity
-        Toast.makeText(getContext(), "Starting chat with " + friendName, Toast.LENGTH_SHORT).show();
+            String friendName = FriendUtils.getUserDisplayName(friendUser);
+            String friendId = friendUser.getId();
+
+            Log.d(TAG, "Starting chat with friend: " + friendName + " (ID: " + friendId + ")");
+
+            // Show loading
+            Toast.makeText(getContext(), "Creating conversation...", Toast.LENGTH_SHORT).show();
+
+            // Create private conversation
+            createPrivateConversation(friendId, friendName);
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error starting chat with friend", e);
+            Toast.makeText(getContext(), "Error starting chat", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Tạo private conversation với friend
+     */
+    private void createPrivateConversation(String friendId, String friendName) {
+        try {
+            NetworkManager networkManager = NetworkManager.getInstance(getContext());
+            if (networkManager == null) {
+                Toast.makeText(getContext(), "Network not available", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String authHeader = networkManager.getAuthorizationHeader();
+            if (authHeader == null) {
+                Toast.makeText(getContext(), "Authentication required", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            CreatePrivateConversationRequest request = new CreatePrivateConversationRequest(friendId);
+
+            networkManager.getApiService().createPrivateConversation(authHeader, request)
+                    .enqueue(new ApiCallback<Conversation>() {
+                        @Override
+                        public void onSuccess(Conversation conversation, String message) {
+                            Log.d(TAG, "Private conversation created successfully: " + conversation.getId());
+
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    navigateToChatActivity(conversation, friendName, friendId);
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onError(int statusCode, String error) {
+                            Log.e(TAG, "Failed to create private conversation: " + error);
+
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    Toast.makeText(getContext(), "Failed to create conversation: " + error, Toast.LENGTH_LONG).show();
+                                });
+                            }
+                        }
+
+                        @Override
+                        public void onNetworkError(String error) {
+                            Log.e(TAG, "Network error creating conversation: " + error);
+
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(() -> {
+                                    Toast.makeText(getContext(), "Network error: " + error, Toast.LENGTH_LONG).show();
+                                });
+                            }
+                        }
+                    });
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating private conversation", e);
+            Toast.makeText(getContext(), "Error creating conversation", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Navigate to ChatActivity
+     */
+    private void navigateToChatActivity(Conversation conversation, String friendName, String friendId) {
+        try {
+            Intent intent = new Intent(getContext(), ChatActivity.class);
+            intent.putExtra(ChatActivity.EXTRA_CONVERSATION_ID, conversation.getId());
+            intent.putExtra(ChatActivity.EXTRA_CONVERSATION_NAME, friendName);
+            intent.putExtra(ChatActivity.EXTRA_CONVERSATION_TYPE, "private");
+            intent.putExtra(ChatActivity.EXTRA_OTHER_USER_ID, friendId);
+
+            startActivity(intent);
+
+            Log.d(TAG, "Navigated to ChatActivity with conversation ID: " + conversation.getId());
+
+        } catch (Exception e) {
+            Log.e(TAG, "Error navigating to ChatActivity", e);
+            Toast.makeText(getContext(), "Error opening chat", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupSearch() {

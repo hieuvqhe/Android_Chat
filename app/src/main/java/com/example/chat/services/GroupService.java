@@ -6,6 +6,7 @@ import com.example.chat.models.*;
 import com.example.chat.network.ApiCallback;
 import com.example.chat.network.NetworkManager;
 import retrofit2.Call;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GroupService {
@@ -26,20 +27,28 @@ public class GroupService {
     }
 
     /**
-     * Create group
+     * Create group with CreateGroupRequest - NEW METHOD
      */
-    public void createGroup(String name, String description, List<String> memberIds, String avatar, ApiCallback<Group> callback) {
+    public void createGroup(CreateGroupRequest request, ApiCallback<Group> callback) {
         String authHeader = networkManager.getAuthorizationHeader();
         if (authHeader == null) {
             callback.onError(401, "Please log in first");
             return;
         }
 
-        CreateGroupRequest request = new CreateGroupRequest(name, description, memberIds, avatar);
-        Log.d(TAG, "Creating group: " + name + " with " + memberIds.size() + " members");
+        Log.d(TAG, "Creating group: " + request.getName() + " with " +
+                (request.getMemberIds() != null ? request.getMemberIds().size() : 0) + " members");
 
         Call<ApiResponse<Group>> call = apiService.createGroup(authHeader, request);
         call.enqueue(callback);
+    }
+
+    /**
+     * Create group
+     */
+    public void createGroup(String name, String description, List<String> memberIds, String avatar, ApiCallback<Group> callback) {
+        CreateGroupRequest request = new CreateGroupRequest(name, description, memberIds, avatar);
+        createGroup(request, callback);
     }
 
     /**
@@ -172,6 +181,48 @@ public class GroupService {
     }
 
     /**
+     * Add member by username
+     */
+    public void addMemberByUsername(String groupId, String username, ApiCallback<Object> callback) {
+        // First search for user by username, then add by ID
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            callback.onError(401, "Please log in first");
+            return;
+        }
+
+        // Search for user first
+        apiService.searchUsers(authHeader, username, 1, 1).enqueue(new ApiCallback<List<UserInfo>>() {
+            @Override
+            public void onSuccess(List<UserInfo> result, String message) {
+                if (result != null && !result.isEmpty()) {
+                    UserInfo user = result.get(0);
+                    if (user.getUsername().equals(username)) {
+                        // Found exact match, add to group
+                        List<String> memberIds = new ArrayList<>();
+                        memberIds.add(user.getId());
+                        addMembers(groupId, memberIds, callback);
+                    } else {
+                        callback.onError(404, "User not found");
+                    }
+                } else {
+                    callback.onError(404, "User not found");
+                }
+            }
+
+            @Override
+            public void onError(int statusCode, String error) {
+                callback.onError(statusCode, error);
+            }
+
+            @Override
+            public void onNetworkError(String error) {
+                callback.onNetworkError(error);
+            }
+        });
+    }
+
+    /**
      * Remove member from group
      */
     public void removeMember(String groupId, String memberId, ApiCallback<Object> callback) {
@@ -181,10 +232,9 @@ public class GroupService {
             return;
         }
 
-        RemoveGroupMemberRequest request = new RemoveGroupMemberRequest(memberId);
         Log.d(TAG, "Removing member " + memberId + " from group: " + groupId);
 
-        Call<ApiResponse<Object>> call = apiService.removeGroupMember(authHeader, groupId, request);
+        Call<ApiResponse<Object>> call = apiService.removeGroupMember(authHeader, groupId, memberId);
         call.enqueue(callback);
     }
 

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_group_info"
+        android:icon="@drawable/ic_info"
+        android:title="Group Info" />
+
+    <item
+        android:id="@+id/action_leave_group"
+        android:icon="@drawable/ic_close"
+        android:title="Leave Group" />
+
+</menu>

@@ -24,53 +24,84 @@ public class NetworkManager {
     private SharedPreferences sharedPreferences;
 
     private NetworkManager(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        setupRetrofit();
+        try {
+            if (context == null) {
+                throw new IllegalArgumentException("Context cannot be null");
+            }
+            sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+            setupRetrofit();
+        } catch (Exception e) {
+            android.util.Log.e("NetworkManager", "Failed to initialize NetworkManager", e);
+            throw e; // Re-throw to let caller handle
+        }
     }
 
-    public static NetworkManager getInstance(Context context) {
-        if (instance == null) {
-            instance = new NetworkManager(context.getApplicationContext());
+    public static synchronized NetworkManager getInstance(Context context) {
+        try {
+            if (instance == null) {
+                if (context == null) {
+                    throw new IllegalArgumentException("Context cannot be null for first initialization");
+                }
+                instance = new NetworkManager(context.getApplicationContext());
+            }
+            return instance;
+        } catch (Exception e) {
+            android.util.Log.e("NetworkManager", "Failed to get NetworkManager instance", e);
+            throw e; // Re-throw to let caller handle
         }
-        return instance;
     }
 
     private void setupRetrofit() {
-        // Create logging interceptor for debugging
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        try {
+            // Create logging interceptor for debugging
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-        // Create OkHttpClient with longer timeouts for Render.com
-        OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)  // Tăng từ 30s lên 60s
-                .readTimeout(60, TimeUnit.SECONDS)     // Tăng từ 30s lên 60s
-                .writeTimeout(60, TimeUnit.SECONDS)    // Tăng từ 30s lên 60s
-                .addInterceptor(loggingInterceptor)
-                // Thêm interceptor để tự động thêm headers
-                .addInterceptor(chain -> {
-                    okhttp3.Request original = chain.request();
-                    okhttp3.Request.Builder requestBuilder = original.newBuilder()
-                            .header("Accept", "application/json")
-                            .header("Content-Type", "application/json");
+            // Create OkHttpClient with longer timeouts for Render.com
+            OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                    .connectTimeout(60, TimeUnit.SECONDS)  // Tăng từ 30s lên 60s
+                    .readTimeout(60, TimeUnit.SECONDS)     // Tăng từ 30s lên 60s
+                    .writeTimeout(60, TimeUnit.SECONDS)    // Tăng từ 30s lên 60s
+                    .addInterceptor(loggingInterceptor)
+                    // Thêm interceptor để tự động thêm headers
+                    .addInterceptor(chain -> {
+                        try {
+                            okhttp3.Request original = chain.request();
+                            okhttp3.Request.Builder requestBuilder = original.newBuilder()
+                                    .header("Accept", "application/json")
+                                    .header("Content-Type", "application/json");
 
-                    okhttp3.Request request = requestBuilder.build();
-                    return chain.proceed(request);
-                })
-                .build();
+                            okhttp3.Request request = requestBuilder.build();
+                            return chain.proceed(request);
+                        } catch (Exception e) {
+                            android.util.Log.e("NetworkManager", "Error in request interceptor", e);
+                            throw e;
+                        }
+                    })
+                    .build();
 
-        // Create custom Gson instance
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
+            // Create custom Gson instance
+            Gson gson = new GsonBuilder()
+                    .setLenient()
+                    .create();
 
-        // Create Retrofit instance
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
+            // Create Retrofit instance
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create(gson))
+                    .build();
 
-        apiService = retrofit.create(ApiService.class);
+            apiService = retrofit.create(ApiService.class);
+
+            if (apiService == null) {
+                throw new RuntimeException("Failed to create ApiService");
+            }
+
+        } catch (Exception e) {
+            android.util.Log.e("NetworkManager", "Failed to setup Retrofit", e);
+            throw e; // Re-throw to let caller handle
+        }
     }
 
     public ApiService getApiService() {
@@ -86,7 +117,16 @@ public class NetworkManager {
     }
 
     public String getAccessToken() {
-        return sharedPreferences.getString(ACCESS_TOKEN_KEY, null);
+        try {
+            if (sharedPreferences == null) {
+                android.util.Log.e("NetworkManager", "SharedPreferences is null in getAccessToken");
+                return null;
+            }
+            return sharedPreferences.getString(ACCESS_TOKEN_KEY, null);
+        } catch (Exception e) {
+            android.util.Log.e("NetworkManager", "Error getting access token", e);
+            return null;
+        }
     }
 
     public String getRefreshToken() {
@@ -123,7 +163,18 @@ public class NetworkManager {
     }
 
     public boolean isLoggedIn() {
-        return getAccessToken() != null && !getAccessToken().isEmpty();
+        try {
+            if (sharedPreferences == null) {
+                android.util.Log.e("NetworkManager", "SharedPreferences is null");
+                return false;
+            }
+
+            String token = getAccessToken();
+            return token != null && !token.trim().isEmpty();
+        } catch (Exception e) {
+            android.util.Log.e("NetworkManager", "Error checking login status", e);
+            return false; // Default to not logged in if there's an error
+        }
     }
 
     public String getAuthorizationHeader() {

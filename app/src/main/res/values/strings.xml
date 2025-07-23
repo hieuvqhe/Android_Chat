@@ -1,5 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Email Verification Activity -->
+    <string name="check_verification_status">Check Verification Status</string>
+    <string name="instruction_email_verification">Please follow the instructions sent to your email to verify your account.</string>
+    <string name="resend_verification_email">Resend Verification Email</string>
+    <string name="resend_available_in">Resend available in %1$d seconds</string>
+    <string name="didnt_receive_email_title">Didnt receive the email?</string>
+    <string name="check_spam_folder_description">Check your spam or junk folder. If you still cant find the email, try resending or changing your email address.</string>
+    <string name="change_email">Change Email</string>
+    <string name="email_verified_title">Email Verified!</string>
+    <string name="email_verified_description">Your email address has been successfully verified. You can now continue using the app.</string>
+    <string name="continue_to_app">Continue to App</string>
+    <string name="join_community_title">Join the Community</string>
+    <string name="create_account_description">Create your account to get started.</string>
+    <string name="username_helper_text">Choose a unique username.</string>
+    <string name="date_of_birth_hint">Date of Birth</string>
+    <string name="password_helper_text">Password must be at least 8 characters.</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="registration_error">Registration failed. Please try again.</string>
+    <string name="agree_to_terms_start">By registering, you agree to our</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="create_account">Create Account</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="login_to_account_title">Login to your account</string>
+    <string name="welcome_back_description">Sign in to continue to your account.</string>
+    <string name="password_hint">Password</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="login_error">Login failed. Please try again.</string>
+    <string name="login">Login</string>
+    <string name="use_biometric">Use biometric</string>
+    <string name="or">or</string>
+    <string name="google">Google</string>
+    <string name="facebook">Facebook</string>
+    <string name="dont_have_account">Dont have an account?</string>
+    <string name="register_here">Register here</string>
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="forgot_password_description">Enter your email to receive a reset link.</string>
+    <string name="email_helper_text">We\'ll send a reset link to your email.</string>
+    <string name="invalid_email_error">Invalid email address.</string>
+    <string name="send_reset_link">Send Reset Link</string>
+    <string name="remember_password">Remember your password?</string>
+    <string name="login_here">Login here</string>
+    <string name="email_sent_title">Email Sent</string>
+    <string name="email_sent_description">A reset link has been sent to your email.</string>
+    <string name="back_to_login">Back to Login</string>
+    <string name="resend_email">Resend Email</string>
+    <string name="welcome_back_title">Welcome Back!</string>
+    <string name="email_verification_title">Email Verification</string>
+    <string name="verify_email_title">Verify Your Email</string>
+    <string name="verification_email_sent_description">A verification email has been sent to your address. Please check your inbox.</string>
+    <string name="checking_verification_status">Checking verification status...</string>
+    <string name="verification_error">Verification failed. Please try again.</string>
+    <string name="edit_profile_title">Edit Profile</string>
+    <string name="tap_to_change_avatar">Tap to change avatar</string>
+    <string name="profile_information_section">Profile Information</string>
+    <string name="username_hint">Username</string>
+    <string name="username_helper_text_profile">Your unique username</string>
+    <string name="display_name_hint">Display Name</string>
+    <string name="display_name_helper_text">This name will be shown on your profile</string>
+    <string name="bio_hint">Bio</string>
+    <string name="bio_helper_text">Tell us about yourself</string>
+    <string name="contact_information_section">Contact Information</string>
+    <string name="email_hint">Email</string>
+    <string name="email_readonly_helper_text">Email cannot be changed</string>
+    <string name="phone_hint">Phone</string>
+    <string name="phone_helper_text">Your phone number</string>
+    <string name="location_hint">Location</string>
+    <string name="location_helper_text">Where are you based?</string>
+    <string name="website_hint">Website</string>
+    <string name="website_helper_text">Your personal or company website</string>
+    <string name="profile_update_error">Failed to update profile. Please try again.</string>
+    <string name="cancel">Cancel</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="saving_profile">Saving profile...</string>
     <string name="app_name">Chat</string>
 
     <!-- Navigation -->
@@ -24,8 +98,10 @@
     <!-- Search -->
     <string name="search_users">Search users...</string>
     <string name="search_friends">Search friends...</string>
+    <string name="search_groups">Search groups...</string>
     <string name="search_hint_users">Search for people by username, email or bio</string>
     <string name="search_hint_friends">Search your friends by username, email or bio</string>
+    <string name="search_hint_groups">Search groups by name or description</string>
 
     <!-- Actions -->
     <string name="message">Message</string>
@@ -49,4 +125,20 @@
     <!-- Validation -->
     <string name="no_bio_available">No bio available</string>
     <string name="unknown_user">Unknown User</string>
+    <string name="chats">Chats</string>
+    <string name="friends">Friends</string>
+    <string name="groups">Groups</string>
+    <string name="profile">Profile</string>
+
+    <!-- Groups -->
+    <string name="my_groups">My Groups</string>
+    <string name="create_group">Create Group</string>
+    <string name="group_name">Group Name</string>
+    <string name="group_description">Group Description</string>
+    <string name="add_members">Add Members</string>
+    <string name="group_created">Group created successfully!</string>
+    <string name="no_groups_yet">You don\'t have any groups yet.\nCreate or join a group to get started!</string>
+    <string name="group_members">Members</string>
+    <string name="leave_group">Leave Group</string>
+    <string name="group_settings">Group Settings</string>
 </resources>
