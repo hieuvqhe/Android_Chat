@@ -57,7 +57,7 @@ public class ChatActivity extends AppCompatActivity {
     private String conversationId;
     private String conversationName;
     private int conversationType; // 0 = private, 1 = group
-    private String otherUserId; // For private chats
+    private String otherUserId;
     private String currentUserId;
 
     private List<Message> messagesList = new ArrayList<>();
