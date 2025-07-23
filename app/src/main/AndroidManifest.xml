@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Internet permissions for API calls -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <!-- Notification permissions -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Notification permissions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -24,8 +21,15 @@
         android:theme="@style/Theme.Chat"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
-        <!-- Main Activity - Entry point with Bottom Navigation -->
+        <activity
+            android:name=".PhoneLoginOtpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhoneLoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PhoneLogin"
+            android:exported="false" /> <!-- Main Activity - Entry point with Bottom Navigation -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -33,55 +37,48 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Login Activity -->
+        </activity> <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Register Activity -->
+            android:windowSoftInputMode="adjustResize" /> <!-- Register Activity -->
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
             android:parentActivityName=".LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Forgot Password Activity -->
+            android:windowSoftInputMode="adjustResize" /> <!-- Forgot Password Activity -->
         <activity
             android:name=".ForgotPasswordActivity"
             android:exported="false"
             android:parentActivityName=".LoginActivity"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- Email Verification Activity -->
+            android:windowSoftInputMode="adjustResize" /> <!-- Email Verification Activity -->
         <activity
             android:name=".EmailVerificationActivity"
             android:exported="true"
             android:parentActivityName=".LoginActivity"
             android:windowSoftInputMode="adjustResize">
+
             <!-- Intent filter for email verification links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Update this with your actual domain when you have email verification links -->
-                <data android:scheme="https"
+                <data
                     android:host="realtime-chat-app-tam7.onrender.com"
-                    android:pathPrefix="/verify-email" />
+                    android:pathPrefix="/verify-email"
+                    android:scheme="https" />
             </intent-filter>
-        </activity>
-
-        <!-- Friends Activity - Accessed from Bottom Navigation -->
+        </activity> <!-- Friends Activity - Accessed from Bottom Navigation -->
         <activity
             android:name=".FriendsActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".EditProfileActivity"
             android:exported="false"
@@ -91,9 +88,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity>
-
-        <!-- User Profile Activity -->
+        </activity> <!-- User Profile Activity -->
         <activity
             android:name=".UserProfileActivity"
             android:exported="false"
@@ -103,48 +98,40 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity>
-
-        <!-- Chat Activity - For private and group chats -->
+        </activity> <!-- Chat Activity - For private and group chats -->
         <activity
             android:name=".ChatActivity"
             android:exported="false"
             android:label="Chat"
             android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity>
-
-        <!-- Create Group Activity -->
+        </activity> <!-- Create Group Activity -->
         <activity
             android:name=".CreateGroupActivity"
             android:exported="false"
             android:label="Create Group"
             android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity>
-
-        <!-- Group Activity - Group details and settings -->
+        </activity> <!-- Group Activity - Group details and settings -->
         <activity
             android:name=".GroupActivity"
             android:exported="false"
             android:label="Group Details"
             android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity>
-
-        <!-- View Profile Activity -->
+        </activity> <!-- View Profile Activity -->
         <activity
             android:name=".ViewProfileActivity"
             android:exported="false"
@@ -154,21 +141,18 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
-        </activity>
-
-        <!-- Search Activity -->
+        </activity> <!-- Search Activity -->
         <activity
             android:name=".SearchActivity"
             android:exported="false"
             android:label="Search"
             android:parentActivityName=".MainActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-
     </application>
 
 </manifest>

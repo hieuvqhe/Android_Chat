@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "75639132695",
-    "project_id": "chattingapp-3cf64",
-    "storage_bucket": "chattingapp-3cf64.firebasestorage.app"
+    "project_number": "466948252734",
+    "project_id": "chatdemofirebase-ecf34",
+    "storage_bucket": "chatdemofirebase-ecf34.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:75639132695:android:e372e7cd3bb80c1a2ec252",
+        "mobilesdk_app_id": "1:466948252734:android:a58328f6f12fb1c47fdd6f",
         "android_client_info": {
           "package_name": "com.example.chat"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCLbc8Zs47yd8Uh8L0ndZKhnFoD13RogwQ"
+          "current_key": "AIzaSyDYlUm-13V9OT-fcod7ZmrcWiUSO0QsXC8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466948252734:android:5258aeb9cd8931f37fdd6f",
+        "android_client_info": {
+          "package_name": "com.example.chatdemo_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYlUm-13V9OT-fcod7ZmrcWiUSO0QsXC8"
         }
       ],
       "services": {

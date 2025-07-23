@@ -75,6 +75,7 @@
     <string name="save_changes">Save Changes</string>
     <string name="saving_profile">Saving profile...</string>
     <string name="app_name">Chat</string>
+    <string name="phone_number_login_btn">Phone Number</string>
 
     <!-- Navigation -->
     <string name="nav_friends">Friends</string>
@@ -141,4 +142,8 @@
     <string name="group_members">Members</string>
     <string name="leave_group">Leave Group</string>
     <string name="group_settings">Group Settings</string>
+    <string name="phone_number">Phone number</string>
+    <string name="phone_number_login">Phone number</string>
+    <string name="phone_number_btn">Phone Number</string>
+    <string name="send_otp">Send OTP</string>
 </resources>

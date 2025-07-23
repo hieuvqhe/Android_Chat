@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLogin"
@@ -36,8 +37,8 @@
             android:layout_height="?attr/actionBarSize"
             app:title="@string/welcome_back_title"
             app:titleCentered="true"
-            app:titleTextColor="@color/md_theme_onPrimary"
-            app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineSmall" />
+            app:titleTextAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+            app:titleTextColor="@color/md_theme_onPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -47,10 +48,10 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:overScrollMode="never"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayoutLogin"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/appBarLayoutLogin">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -63,41 +64,41 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_large"
+                android:animateLayoutChanges="true"
+                app:cardBackgroundColor="@color/md_theme_surface"
                 app:cardCornerRadius="@dimen/card_corner_radius_large"
                 app:cardElevation="@dimen/card_elevation"
-                app:cardBackgroundColor="@color/md_theme_surface"
-                app:strokeColor="@color/md_theme_outline"
-                app:strokeWidth="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.3"
                 app:layout_constraintWidth_max="400dp"
-                android:animateLayoutChanges="true">
+                app:strokeColor="@color/md_theme_outline"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:orientation="vertical"
-                    android:padding="@dimen/spacing_extra_large"
-                    android:gravity="center">
+                    android:padding="@dimen/spacing_extra_large">
 
                     <!-- App Icon with modern styling -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="@dimen/icon_circle_large"
                         android:layout_height="@dimen/icon_circle_large"
                         android:layout_marginBottom="@dimen/spacing_large"
+                        app:cardBackgroundColor="@color/md_theme_primaryContainer"
                         app:cardCornerRadius="@dimen/icon_circle_radius"
-                        app:cardElevation="@dimen/card_elevation_small"
-                        app:cardBackgroundColor="@color/md_theme_primaryContainer">
+                        app:cardElevation="@dimen/card_elevation_small">
 
                         <ImageView
                             android:layout_width="@dimen/icon_large"
                             android:layout_height="@dimen/icon_large"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_login_24"
                             android:contentDescription="Login App Icon"
+                            android:src="@drawable/ic_login_24"
                             app:tint="@color/md_theme_onPrimaryContainer" />
 
                     </com.google.android.material.card.MaterialCardView>
@@ -106,79 +107,79 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_small"
+                        android:gravity="center"
                         android:text="@string/login_to_account_title"
                         android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
-                        android:textColor="@color/md_theme_onSurface"
-                        android:layout_marginBottom="@dimen/spacing_small"
-                        android:gravity="center" />
+                        android:textColor="@color/md_theme_onSurface" />
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/welcome_back_description"
-                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                        android:textColor="@color/md_theme_onSurfaceVariant"
                         android:layout_marginBottom="@dimen/spacing_extra_large"
                         android:gravity="center"
-                        android:lineSpacingExtra="@dimen/line_spacing" />
+                        android:lineSpacingExtra="@dimen/line_spacing"
+                        android:text="@string/welcome_back_description"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                        android:textColor="@color/md_theme_onSurfaceVariant" />
 
                     <!-- Email Input with improved styling -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/emailInputLayout"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/spacing_medium"
                         android:hint="@string/email_hint"
-                        app:startIconDrawable="@drawable/ic_email_24"
-                        app:startIconTint="@color/md_theme_primary"
                         app:boxStrokeColor="@color/md_theme_primary"
                         app:boxStrokeErrorColor="@color/md_theme_error"
-                        app:hintTextColor="@color/md_theme_primary"
-                        app:errorTextColor="@color/md_theme_error"
                         app:endIconMode="clear_text"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                        app:errorTextColor="@color/md_theme_error"
+                        app:hintTextColor="@color/md_theme_primary"
+                        app:startIconDrawable="@drawable/ic_email_24"
+                        app:startIconTint="@color/md_theme_primary">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editTextEmail"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:autofillHints="emailAddress"
+                            android:imeOptions="actionNext"
                             android:inputType="textEmailAddress"
                             android:maxLines="1"
-                            android:textSize="16sp"
                             android:textColor="@color/md_theme_onSurface"
-                            android:autofillHints="emailAddress"
-                            android:imeOptions="actionNext" />
+                            android:textSize="16sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Password Input with improved styling -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/passwordInputLayout"
+                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/spacing_small"
                         android:hint="@string/password_hint"
-                        app:startIconDrawable="@drawable/ic_lock_24"
-                        app:startIconTint="@color/md_theme_primary"
-                        app:endIconMode="password_toggle"
-                        app:endIconTint="@color/md_theme_primary"
                         app:boxStrokeColor="@color/md_theme_primary"
                         app:boxStrokeErrorColor="@color/md_theme_error"
-                        app:hintTextColor="@color/md_theme_primary"
+                        app:endIconMode="password_toggle"
+                        app:endIconTint="@color/md_theme_primary"
                         app:errorTextColor="@color/md_theme_error"
+                        app:hintTextColor="@color/md_theme_primary"
                         app:passwordToggleContentDescription="Toggle password visibility"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+                        app:startIconDrawable="@drawable/ic_lock_24"
+                        app:startIconTint="@color/md_theme_primary">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/editTextPassword"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:autofillHints="password"
+                            android:imeOptions="actionDone"
                             android:inputType="textPassword"
                             android:maxLines="1"
-                            android:textSize="16sp"
                             android:textColor="@color/md_theme_onSurface"
-                            android:autofillHints="password"
-                            android:imeOptions="actionDone" />
+                            android:textSize="16sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -186,38 +187,38 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/spacing_medium"
                         android:gravity="center_vertical"
-                        android:layout_marginBottom="@dimen/spacing_medium">
+                        android:orientation="horizontal">
 
                         <com.google.android.material.checkbox.MaterialCheckBox
                             android:id="@+id/checkBoxRememberMe"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:buttonTint="@color/md_theme_primary"
-                            android:contentDescription="Remember me" />
+                            android:contentDescription="Remember me"
+                            app:buttonTint="@color/md_theme_primary" />
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/spacing_small"
                             android:layout_weight="1"
                             android:text="@string/remember_me"
                             android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                            android:textColor="@color/md_theme_onSurfaceVariant"
-                            android:layout_marginStart="@dimen/spacing_small" />
+                            android:textColor="@color/md_theme_onSurfaceVariant" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/buttonForgotPassword"
+                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/forgot_password"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            android:textColor="@color/md_theme_primary"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
                             android:padding="@dimen/spacing_small"
-                            app:rippleColor="@color/md_theme_primary"
-                            style="@style/Widget.Material3.Button.TextButton" />
+                            android:text="@string/forgot_password"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="@color/md_theme_primary"
+                            app:rippleColor="@color/md_theme_primary" />
 
                     </LinearLayout>
 
@@ -228,9 +229,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/spacing_medium"
                         android:visibility="gone"
+                        app:cardBackgroundColor="@color/md_theme_errorContainer"
                         app:cardCornerRadius="@dimen/card_corner_radius"
                         app:cardElevation="0dp"
-                        app:cardBackgroundColor="@color/md_theme_errorContainer"
                         app:strokeColor="@color/md_theme_error"
                         app:strokeWidth="1dp"
                         tools:visibility="visible">
@@ -238,17 +239,17 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:padding="@dimen/spacing_medium"
-                            android:gravity="center_vertical">
+                            android:padding="@dimen/spacing_medium">
 
                             <ImageView
                                 android:layout_width="@dimen/icon_small"
                                 android:layout_height="@dimen/icon_small"
                                 android:layout_marginEnd="@dimen/spacing_small"
+                                android:contentDescription="Error icon"
                                 android:src="@drawable/ic_error_24"
-                                app:tint="@color/md_theme_error"
-                                android:contentDescription="Error icon" />
+                                app:tint="@color/md_theme_error" />
 
                             <TextView
                                 android:id="@+id/textViewErrorMessage"
@@ -266,20 +267,20 @@
                     <!-- Login Button with modern styling -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonLogin"
+                        style="@style/Widget.Material3.Button"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/button_height"
+                        android:layout_marginBottom="@dimen/spacing_medium"
+                        android:stateListAnimator="@animator/button_state_animator"
                         android:text="@string/login"
                         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                         android:textColor="@color/md_theme_onPrimary"
-                        app:cornerRadius="@dimen/button_corner_radius"
                         app:backgroundTint="@color/md_theme_primary"
-                        android:layout_marginBottom="@dimen/spacing_medium"
+                        app:cornerRadius="@dimen/button_corner_radius"
                         app:elevation="@dimen/button_elevation"
                         app:icon="@drawable/ic_login_24"
                         app:iconGravity="textStart"
-                        app:iconTint="@color/md_theme_onPrimary"
-                        android:stateListAnimator="@animator/button_state_animator"
-                        style="@style/Widget.Material3.Button" />
+                        app:iconTint="@color/md_theme_onPrimary" />
 
                     <!-- Loading indicator -->
                     <com.google.android.material.progressindicator.CircularProgressIndicator
@@ -287,40 +288,40 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/spacing_medium"
+                        android:indeterminate="true"
                         android:visibility="gone"
                         app:indicatorColor="@color/md_theme_primary"
-                        app:trackColor="@color/md_theme_surfaceVariant"
                         app:indicatorSize="32dp"
-                        app:trackThickness="4dp"
-                        android:indeterminate="true" />
+                        app:trackColor="@color/md_theme_surfaceVariant"
+                        app:trackThickness="4dp" />
 
                     <!-- Biometric Authentication Option -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/buttonBiometric"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/button_height"
+                        android:layout_marginBottom="@dimen/spacing_large"
                         android:text="@string/use_biometric"
                         android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
                         android:textColor="@color/md_theme_primary"
-                        app:cornerRadius="@dimen/button_corner_radius"
-                        app:strokeColor="@color/md_theme_primary"
-                        app:strokeWidth="1dp"
+                        android:visibility="gone"
                         app:backgroundTint="@android:color/transparent"
-                        android:layout_marginBottom="@dimen/spacing_large"
+                        app:cornerRadius="@dimen/button_corner_radius"
                         app:icon="@drawable/ic_fingerprint_24"
                         app:iconGravity="textStart"
                         app:iconTint="@color/md_theme_primary"
-                        android:visibility="gone"
-                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        app:strokeColor="@color/md_theme_primary"
+                        app:strokeWidth="1dp"
                         tools:visibility="visible" />
 
                     <!-- Divider with "OR" -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginVertical="@dimen/spacing_medium"
                         android:gravity="center_vertical"
-                        android:layout_marginVertical="@dimen/spacing_medium">
+                        android:orientation="horizontal">
 
                         <com.google.android.material.divider.MaterialDivider
                             android:layout_width="0dp"
@@ -331,12 +332,12 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/or"
-                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-                            android:textColor="@color/md_theme_onSurfaceVariant"
                             android:layout_marginHorizontal="@dimen/spacing_medium"
                             android:background="@color/md_theme_surface"
-                            android:paddingHorizontal="@dimen/spacing_small" />
+                            android:paddingHorizontal="@dimen/spacing_small"
+                            android:text="@string/or"
+                            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                            android:textColor="@color/md_theme_onSurfaceVariant" />
 
                         <com.google.android.material.divider.MaterialDivider
                             android:layout_width="0dp"
@@ -350,45 +351,26 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/spacing_large"
                         android:gravity="center"
-                        android:layout_marginBottom="@dimen/spacing_large">
+                        android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
-                            android:id="@+id/buttonGoogleLogin"
-                            android:layout_width="0dp"
+                            android:id="@+id/phoneLoginButton"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="match_parent"
                             android:layout_height="@dimen/button_height"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="@dimen/spacing_small"
-                            android:text="@string/google"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            android:textColor="@color/md_theme_onSurface"
+                            android:layout_marginBottom="@dimen/spacing_medium"
+                            android:stateListAnimator="@animator/button_state_animator"
+                            android:text="@string/phone_hint"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                            android:textColor="@color/md_theme_onPrimary"
+                            app:backgroundTint="@color/gray_dark"
                             app:cornerRadius="@dimen/button_corner_radius"
-                            app:strokeColor="@color/md_theme_outline"
-                            app:strokeWidth="1dp"
-                            app:backgroundTint="@color/md_theme_surface"
-                            app:icon="@drawable/ic_google_24"
+                            app:elevation="@dimen/button_elevation"
+                            app:icon="@drawable/ic_phone_24"
                             app:iconGravity="textStart"
-                            app:iconSize="20dp"
-                            style="@style/Widget.Material3.Button.OutlinedButton" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/buttonFacebookLogin"
-                            android:layout_width="0dp"
-                            android:layout_height="@dimen/button_height"
-                            android:layout_weight="1"
-                            android:layout_marginStart="@dimen/spacing_small"
-                            android:text="@string/facebook"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            android:textColor="@color/md_theme_onSurface"
-                            app:cornerRadius="@dimen/button_corner_radius"
-                            app:strokeColor="@color/md_theme_outline"
-                            app:strokeWidth="1dp"
-                            app:backgroundTint="@color/md_theme_surface"
-                            app:icon="@drawable/ic_facebook_24"
-                            app:iconGravity="textStart"
-                            app:iconSize="20dp"
-                            style="@style/Widget.Material3.Button.OutlinedButton" />
+                            app:iconTint="@color/md_theme_onPrimary" />
 
                     </LinearLayout>
 
@@ -396,8 +378,8 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -408,16 +390,16 @@
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/buttonRegisterLink"
+                            style="@style/Widget.Material3.Button.TextButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/register_here"
-                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
-                            android:textColor="@color/md_theme_primary"
                             android:minWidth="0dp"
                             android:minHeight="0dp"
                             android:padding="@dimen/spacing_small"
-                            app:rippleColor="@color/md_theme_primary"
-                            style="@style/Widget.Material3.Button.TextButton" />
+                            android:text="@string/register_here"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                            android:textColor="@color/md_theme_primary"
+                            app:rippleColor="@color/md_theme_primary" />
 
                     </LinearLayout>
 

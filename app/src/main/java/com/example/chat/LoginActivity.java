@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
 
     private TextInputEditText editTextEmail, editTextPassword;
-    private MaterialButton buttonLogin, buttonRegisterLink, buttonForgotPassword;
+    private MaterialButton buttonLogin, buttonRegisterLink, buttonForgotPassword, phoneLoginButton;
     private NetworkManager networkManager;
 
     @Override
@@ -74,7 +74,10 @@ public class LoginActivity extends AppCompatActivity {
             
             buttonForgotPassword = findViewById(R.id.buttonForgotPassword);
             Log.d(TAG, "buttonForgotPassword: " + (buttonForgotPassword != null ? "found" : "NULL"));
-            
+
+            phoneLoginButton = findViewById(R.id.phoneLoginButton);
+            Log.d(TAG, "phoneLoginButton: " + (phoneLoginButton != null ? "found" : "NULL"));
+
             // Check for critical views
             if (editTextEmail == null) {
                 throw new RuntimeException("editTextEmail not found in layout");
@@ -133,6 +136,23 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "Forgot password clicked");
                         try {
                             Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                            startActivity(intent);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error navigating to forgot password", e);
+                            Toast.makeText(LoginActivity.this, "Navigation error", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                Log.d(TAG, "Forgot password listener set");
+            }
+
+            if (phoneLoginButton != null) {
+                phoneLoginButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d(TAG, "Phone login button clicked");
+                        try {
+                            Intent intent = new Intent(LoginActivity.this, PhoneLoginActivity.class);
                             startActivity(intent);
                         } catch (Exception e) {
                             Log.e(TAG, "Error navigating to forgot password", e);
