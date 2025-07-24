@@ -103,7 +103,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private void setupClickListeners() {
         buttonSendMessage.setOnClickListener(v -> {
-            // TODO: Implement send message functionality
             Toast.makeText(this, "Message feature coming soon!", Toast.LENGTH_SHORT).show();
         });
 
@@ -147,7 +146,8 @@ public class UserProfileActivity extends AppCompatActivity {
             public void onError(int statusCode, String message) {
                 runOnUiThread(() -> {
                     Log.e(TAG, "❌ Error loading user profile: " + statusCode + " - " + message);
-                    Toast.makeText(UserProfileActivity.this, "Error loading profile: " + message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserProfileActivity.this, "Error loading profile: " + message, Toast.LENGTH_SHORT)
+                            .show();
 
                     if (statusCode == 401) {
                         // Handle unauthorized error
@@ -170,7 +170,8 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void displayUserProfile(User user) {
-        if (user == null) return;
+        if (user == null)
+            return;
 
         // Set toolbar title
         if (getSupportActionBar() != null) {
@@ -210,37 +211,37 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         }
 
-        // Set bio
-        if (user.getBio() != null && !user.getBio().trim().isEmpty()) {
-            textViewBio.setText(user.getBio());
-            cardBio.setVisibility(View.VISIBLE);
-        } else {
-            cardBio.setVisibility(View.GONE);
-        }
+        // Set bio 
+        if (user.getBio() != null && !user.getBio().trim().isEmpty()) { 
+            textViewBio.setText(user.getBio()); 
+            cardBio.setVisibility(View.VISIBLE); 
+        } else { 
+            cardBio.setVisibility(View.GONE); 
+        } 
 
-        // Set location
-        if (user.getLocation() != null && !user.getLocation().trim().isEmpty()) {
-            textViewLocation.setText(user.getLocation());
-            cardLocation.setVisibility(View.VISIBLE);
-        } else {
-            cardLocation.setVisibility(View.GONE);
-        }
+        // Set location 
+        if (user.getLocation() != null && !user.getLocation().trim().isEmpty()) { 
+            textViewLocation.setText(user.getLocation()); 
+            cardLocation.setVisibility(View.VISIBLE); 
+        } else { 
+            cardLocation.setVisibility(View.GONE); 
+        } 
 
         // Set website
-        if (user.getWebsite() != null && !user.getWebsite().trim().isEmpty()) {
-            textViewWebsite.setText(user.getWebsite());
-            cardWebsite.setVisibility(View.VISIBLE);
-        } else {
-            cardWebsite.setVisibility(View.GONE);
-        }
+        if (user.getWebsite() != null && !user.getWebsite().trim().isEmpty()) { 
+            textViewWebsite.setText(user.getWebsite()); 
+            cardWebsite.setVisibility(View.VISIBLE); 
+        } else { 
+            cardWebsite.setVisibility(View.GONE); 
+        } 
 
         // Load avatar
         if (user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
             Glide.with(this)
-                    .load(user.getAvatar())
-                    .apply(new RequestOptions().circleCrop())
-                    .placeholder(R.drawable.default_avatar)
-                    .error(R.drawable.default_avatar)
+                    .load(user.getAvatar()) 
+                    .apply(new RequestOptions().circleCrop()) 
+                    .placeholder(R.drawable.default_avatar) 
+                    .error(R.drawable.default_avatar) 
                     .into(imageViewAvatar);
         } else {
             Glide.with(this)
@@ -250,19 +251,18 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void sendFriendRequest() {
+    private void sendFriendRequest() { 
         if (userProfile == null) {
-            Toast.makeText(this, "User profile not loaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "User profile not loaded", Toast.LENGTH_SHORT).show(); 
+            return;
+        } 
+
+        String authHeader = networkManager.getAuthorizationHeader(); 
+        if (authHeader == null) { 
+            Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show(); 
             return;
         }
 
-        String authHeader = networkManager.getAuthorizationHeader();
-        if (authHeader == null) {
-            Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Disable button to prevent double clicks
         buttonAddFriend.setEnabled(false);
         buttonAddFriend.setText("Sending...");
 
@@ -272,7 +272,8 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Friend result, String message) {
                 runOnUiThread(() -> {
-                    Toast.makeText(UserProfileActivity.this, "Friend request sent to " + userProfile.getUsername(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UserProfileActivity.this, "Friend request sent to " + userProfile.getUsername(),
+                            Toast.LENGTH_SHORT).show();
 
                     // Update button state
                     buttonAddFriend.setText("Request Sent");
