@@ -3,19 +3,16 @@ package com.example.chat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.example.chat.models.ApiResponse;
+import com.example.chat.models.LoginRequest;
+import com.example.chat.models.LoginResponseData;
 import com.example.chat.models.UpdateProfileRequest;
 import com.example.chat.models.User;
 import com.example.chat.network.ApiCallback;
@@ -35,9 +32,9 @@ public class WelcomeUserActivity extends AppCompatActivity {
     private NetworkManager networkManager;
     private User userProfile;
 
-    private String username = getIntent().getStringExtra("phone");
-    private boolean isRegister = getIntent().getBooleanExtra("isRegister", false);
+    private boolean isRegistered;
     private static final String TAG = "UserWelcome";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,108 +42,21 @@ public class WelcomeUserActivity extends AppCompatActivity {
 
         try {
             setContentView(R.layout.activity_welcome_user);
+            networkManager = NetworkManager.getInstance(this);
+            isRegistered = getIntent().getBooleanExtra("isRegistered", false);
+
             initViews();
             setupToolbar();
             setupClickListeners();
-            if(isRegister){
-                loadUserProfile();
-                textWelcome.setText("Welcome come back!");
-                userNameInput.setText(userProfile.getUsername());
-            }
-            networkManager = NetworkManager.getInstance(this);
+
+            // Load user profile first, then setup UI based on result
+            loadMyProfile();
 
         } catch (Exception e) {
-            Toast.makeText(this, "App initialization failed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "App initialization failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "onCreate error: ", e);
             finish();
         }
-    }
-
-    private void setNewUserName(String newUserName) {
-        UpdateProfileRequest request = new UpdateProfileRequest();
-        request.setUsername(newUserName);
-        request.setBio(userProfile.getBio().isEmpty() ? null : userProfile.getBio());
-        request.setLocation(userProfile.getLocation().isEmpty() ? null : userProfile.getLocation());
-        request.setWebsite(userProfile.getWebsite().isEmpty() ? null : userProfile.getWebsite());
-        // Keep current avatar for now
-        request.setAvatar(userProfile.getAvatar());
-        String authHeader = networkManager.getAuthorizationHeader();
-        if (authHeader == null) {
-            Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-        networkManager.getApiService().updateMyProfile(authHeader, request).enqueue(new ApiCallback<User>() {
-            @Override
-            public void onSuccess(User result, String message) {
-                runOnUiThread(() -> {
-                    Toast.makeText(WelcomeUserActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                    finish(); // Return to profile fragment
-                });
-            }
-
-            @Override
-            public void onError(int statusCode, String message) {
-                runOnUiThread(() -> {
-                    Log.e(TAG, "Error updating profile: " + message);
-                    Toast.makeText(WelcomeUserActivity.this, "Failed to update profile: " + message, Toast.LENGTH_LONG).show();
-                });
-            }
-
-            @Override
-            public void onNetworkError(String message) {
-                runOnUiThread(() -> {
-                    Log.e(TAG, "Network error: " + message);
-                    Toast.makeText(WelcomeUserActivity.this, "Network error: " + message, Toast.LENGTH_LONG).show();
-                });
-            }
-        });
-
-    }
-
-    private void loadUserProfile() {
-        String authHeader = networkManager.getAuthorizationHeader();
-        if (authHeader == null) {
-            Log.e(TAG, "No authorization token found");
-            Toast.makeText(this, "Authentication error", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        Log.d(TAG, "Loading profile for username: " + getIntent().getStringExtra("phone"));
-
-        networkManager.getApiService().getUserProfile(authHeader, username).enqueue(new ApiCallback<User>() {
-            @Override
-            public void onSuccess(User result, String message) {
-                runOnUiThread(() -> {
-                    userProfile = result;
-                    Log.d(TAG, "✅ User profile loaded successfully: " + result.getUsername());
-                });
-            }
-
-            @Override
-            public void onError(int statusCode, String message) {
-                runOnUiThread(() -> {
-                    Log.e(TAG, "❌ Error loading user profile: " + statusCode + " - " + message);
-                    Toast.makeText(WelcomeUserActivity.this, "Error loading profile: " + message, Toast.LENGTH_SHORT).show();
-
-                    if (statusCode == 401) {
-                        // Handle unauthorized error
-                        finish();
-                    } else if (statusCode == 404) {
-                        Toast.makeText(WelcomeUserActivity.this, "User not found", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
-            }
-
-            @Override
-            public void onNetworkError(String message) {
-                runOnUiThread(() -> {
-                    Log.e(TAG, "🌐 Network error: " + message);
-                    Toast.makeText(WelcomeUserActivity.this, "Network error: " + message, Toast.LENGTH_SHORT).show();
-                });
-            }
-        });
     }
 
     private void initViews() {
@@ -160,94 +70,147 @@ public class WelcomeUserActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void setupClickListeners() {
-        if(chatNowButton != null){
-            chatNowButton.setOnClickListener(v -> {
-                setNewUserName(userNameInput.getText().toString());
-                getUserProfile();
-            });
-        }
-    }
-
-    private void getUserProfile() {
-        try {
-            String authHeader = networkManager.getAuthorizationHeader();
-            if (authHeader == null) {
-                Log.e(TAG, "No authorization header available");
-                navigateToMainActivity();
+        chatNowButton.setOnClickListener(v -> {
+            String newUsername = userNameInput.getText().toString().trim();
+            if (newUsername.isEmpty()) {
+                Toast.makeText(this, "Please enter a username", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            Call<ApiResponse<User>> call = networkManager.getApiService().getMyProfile(authHeader);
-            call.enqueue(new ApiCallback<User>() {
-                @Override
-                public void onSuccess(User user, String message) {
-                    Log.d(TAG, "User profile retrieved successfully");
+            if (isRegistered) {
+                // User is returning, just navigate to main
+                navigateToMainActivity();
+            } else {
+                // New user, update profile first
+                updateUsername(newUsername);
+            }
+        });
+    }
 
-                    runOnUiThread(() -> {
-                        try {
-                            // Save user ID
-                            if (user != null && user.getId() != null) {
-                                networkManager.saveUserId(user.getId());
-                                Log.d(TAG, "User ID saved: " + user.getId());
-                            }
+    // Load current user's profile
+    private void loadMyProfile() {
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            showToast("Authentication required", true);
+            finish();
+            return;
+        }
 
-                            Toast.makeText(WelcomeUserActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                            navigateToMainActivity();
+        networkManager.getApiService().getMyProfile(authHeader).enqueue(new ApiCallback<User>() {
+            @Override
+            public void onSuccess(User result, String message) {
+                runOnUiThread(() -> {
+                    userProfile = result;
+                    Log.d(TAG, "✅ My profile loaded: " + result.getUsername());
 
-                        } catch (Exception e) {
-                            Log.e(TAG, "Error processing user profile", e);
-                            // Still navigate to main even if user profile fails
-                            navigateToMainActivity();
-                        }
-                    });
-                }
+                    // Save user ID
+                    if (result.getId() != null) {
+                        networkManager.saveUserId(result.getId());
+                    }
 
-                @Override
-                public void onError(int statusCode, String error) {
-                    Log.e(TAG, "Failed to get user profile: " + error);
+                    setupUIBasedOnUserType();
+                });
+            }
 
-                    runOnUiThread(() -> {
-                        // Still navigate to main even if user profile fails
-                        Toast.makeText(WelcomeUserActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        navigateToMainActivity();
-                    });
-                }
+            @Override
+            public void onError(int statusCode, String message) {
+                runOnUiThread(() -> {
+                    Log.e(TAG, "❌ Error loading my profile: " + message);
+                    showToast("Error loading profile: " + message, true);
+                    if (statusCode == 401) {
+                        finish();
+                    }
+                });
+            }
 
-                @Override
-                public void onNetworkError(String error) {
-                    Log.e(TAG, "Network error getting user profile: " + error);
+            @Override
+            public void onNetworkError(String message) {
+                showToast("Network error: " + message, true);
+            }
+        });
+    }
 
-                    runOnUiThread(() -> {
-                        // Still navigate to main even if user profile fails
-                        Toast.makeText(WelcomeUserActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
-                        navigateToMainActivity();
-                    });
-                }
-            });
+    private void setupUIBasedOnUserType() {
+        if (userProfile == null) {
+            Log.e(TAG, "userProfile is null in setupUIBasedOnUserType");
+            return;
+        }
 
-        } catch (Exception e) {
-            Log.e(TAG, "Error getting user profile", e);
-            // Still navigate to main even if user profile fails
-            navigateToMainActivity();
+        if (isRegistered) {
+            // Returning user
+            textWelcome.setText("Welcome back!");
+            userNameInput.setText(userProfile.getUsername());
+            userNameInput.setEnabled(false); // Don't allow editing for returning users
+            chatNowButton.setText("Continue to Chat");
+        } else {
+            // New user
+            textWelcome.setText("Welcome! Please set your username:");
+            userNameInput.setText(""); // Let them enter new username
+            userNameInput.setEnabled(true);
+            chatNowButton.setText("Start Chatting");
         }
     }
 
-    private void navigateToMainActivity() {
-        try {
-            Intent intent = new Intent(WelcomeUserActivity.this, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
-        } catch (Exception e) {
-            Log.e(TAG, "Error navigating to MainActivity", e);
-            Toast.makeText(this, "Navigation error", Toast.LENGTH_SHORT).show();
+    private void updateUsername(String newUsername) {
+        if (userProfile == null) {
+            Log.e(TAG, "userProfile is null in updateUsername");
+            showToast("Profile not loaded yet", true);
+            return;
         }
+
+        UpdateProfileRequest request = new UpdateProfileRequest();
+        request.setUsername(newUsername);
+        request.setBio(userProfile.getBio() != null ? userProfile.getBio() : "");
+        request.setLocation(userProfile.getLocation() != null ? userProfile.getLocation() : "");
+        request.setWebsite(userProfile.getWebsite() != null ? userProfile.getWebsite() : "");
+        request.setAvatar(userProfile.getAvatar());
+
+        String authHeader = networkManager.getAuthorizationHeader();
+        if (authHeader == null) {
+            showToast("Authentication required", true);
+            finish();
+            return;
+        }
+
+        networkManager.getApiService().updateMyProfile(authHeader, request).enqueue(new ApiCallback<User>() {
+            @Override
+            public void onSuccess(User result, String message) {
+                runOnUiThread(() -> {
+                    userProfile = result; // Update local profile
+                    Toast.makeText(WelcomeUserActivity.this, "Username updated successfully!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onSuccess: Username updated successfully");
+                    navigateToMainActivity();
+                });
+            }
+
+            @Override
+            public void onError(int statusCode, String message) {
+                showToast("Failed to update username: " + message, true);
+                Log.e(TAG, "onError: Failed to update username: " + message);
+            }
+
+            @Override
+            public void onNetworkError(String message) {
+                showToast("Network error: " + message, true);
+            }
+        });
+    }
+
+    private void navigateToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void showToast(String message, boolean isLong) {
+        runOnUiThread(() ->
+                Toast.makeText(this, message, isLong ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show()
+        );
     }
 }

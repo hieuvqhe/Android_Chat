@@ -79,8 +79,6 @@ public class PhoneLoginActivity extends AppCompatActivity {
         if (sendOtpButton != null) {
             sendOtpButton.setOnClickListener(v -> {
                 try {
-                    Animation scaleAnimation = AnimationUtils.loadAnimation(PhoneLoginActivity.this, R.anim.scale_click);
-                    v.startAnimation(scaleAnimation);
 
                     String phoneNumber = phoneNumInput.getText().toString().trim();
 
@@ -95,9 +93,6 @@ public class PhoneLoginActivity extends AppCompatActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra("phoneNumber", phoneNumInput.getText().toString());
                     startActivity(intent);
-
-                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                    finish();
                 } catch (Exception e) {
                     android.util.Log.e("RegisterActivity", "Error navigating to login", e);
                 }
